@@ -1,12 +1,12 @@
 # sync: rh-2.4.7-7
 
-%define snap 060323
+%define snap 070313
 %define fver %version-%snap
 
 Summary: 	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version: 	2.6.16
-Release: 	%mkrel 4
+Version: 	2.6.20
+Release: 	%mkrel 1
 License: 	GPL
 Url:		http://linux-net.osdl.org/index.php/Iproute2
 Group:  	Networking/Other
@@ -25,7 +25,7 @@ Patch106: iproute2-2.6.X-ss040702-build-fix.patch
 BuildRequires:	bison
 BuildRequires:	db4-devel
 BuildRequires:	flex
-BuildRequires:	kernel-source => 2.6.7
+BuildRequires:	kernel-source
 BuildRequires:	linuxdoc-tools
 BuildRequires:  linux-atm-devel
 BuildRoot:	%_tmppath/%name-%version-%release-root
@@ -46,7 +46,7 @@ routing, fast NAT and packet scheduling.
 Documentation for iproute
 
 %prep
-%setup -q -n %name-%fver
+%setup -q -n iproute-%fver
 %patch6 -p1 -b .flags
 %patch8 -p1 -b .libdir
 
