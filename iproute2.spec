@@ -8,7 +8,7 @@ Name:		iproute2
 Version: 	2.6.16
 Release: 	%mkrel 4
 License: 	GPL
-Url:		http://developer.osdl.org/dev/iproute2/
+Url:		http://linux-net.osdl.org/index.php/Iproute2
 Group:  	Networking/Other
 Source2: iproute2-man8.tar.bz2
 Source: 	%{name}-%fver.tar.bz2
