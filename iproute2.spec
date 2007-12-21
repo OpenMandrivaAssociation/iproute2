@@ -6,7 +6,7 @@
 Summary: 	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version: 	2.6.20
-Release: 	%mkrel 1
+Release: 	%mkrel 2
 License: 	GPL
 Url:		http://linux-net.osdl.org/index.php/Iproute2
 Group:  	Networking/Other
@@ -21,7 +21,6 @@ Patch100: iproute2-def-echo.patch
 Patch102: iproute2-2.4.7-bashfix.patch
 Patch105: iproute2-mult-deflt-gateways.patch
 Patch106: iproute2-2.6.X-ss040702-build-fix.patch
-
 BuildRequires:	bison
 BuildRequires:	db4-devel
 BuildRequires:	flex
@@ -29,6 +28,7 @@ BuildRequires:	kernel-source
 BuildRequires:	linuxdoc-tools
 BuildRequires:  linux-atm-devel
 Requires:	iputils
+Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
 %package doc
 Summary: Documentation for Advanced IP routing and network device configuration tools
@@ -92,5 +92,3 @@ rm -fr %buildroot
 %doc %{_docdir}/%{name}-%{version}/*.sgml
 %doc %{_docdir}/%{name}-%{version}/*.tex
 %doc %{_docdir}/%{name}-%{version}/examples
-
-
