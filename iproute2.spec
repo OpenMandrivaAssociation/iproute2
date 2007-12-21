@@ -19,7 +19,8 @@ Source: 	%{name}-%fver.tar.bz2
 # RH patches
 #Patch5 is fscking compilation against kernel22 in rh
 Patch6: iproute2-flags.patch
-Patch8: iproute2-2.6.16-libdir.patch
+# from Cross LFS
+Patch8: http://ftp.osuosl.org/pub/clfs/clfs-packages/svn/iproute2-2.6.23-libdir-1.patch
 # MDK patches
 Patch100: iproute2-def-echo.patch
 Patch102: iproute2-2.4.7-bashfix.patch
@@ -65,10 +66,7 @@ Documentation for iproute
 
 %install
 rm -fr $RPM_BUILD_ROOT
-%makeinstall_std SBINDIR=/sbin
-%if "%{_lib}" != "lib"
-  mv %{buildroot}%{_prefix}/lib %{buildroot}%{_libdir}
-%endif
+%makeinstall_std SBINDIR=/sbin LIBDIR=%{_libdir}
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 
 # do not add q_atm.so for the moment, as it will pull libatm, and 
