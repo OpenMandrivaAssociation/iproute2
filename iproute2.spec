@@ -1,12 +1,16 @@
 # sync: rh-2.4.7-7
 
-%define snap 070313
+%define snap 0
+%if %{snap}
 %define fver %version-%snap
+%else
+%define fver %version
+%endif
 
 Summary: 	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version: 	2.6.20
-Release: 	%mkrel 2
+Version: 	2.6.23
+Release: 	%mkrel 1
 License: 	GPL
 Url:		http://linux-net.osdl.org/index.php/Iproute2
 Group:  	Networking/Other
@@ -45,7 +49,7 @@ routing, fast NAT and packet scheduling.
 Documentation for iproute
 
 %prep
-%setup -q -n iproute-%fver
+%setup -q -n %{name}-%fver
 %patch6 -p1 -b .flags
 %patch8 -p1 -b .libdir
 
