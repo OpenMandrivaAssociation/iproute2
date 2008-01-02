@@ -32,6 +32,7 @@ BuildRequires:	flex
 BuildRequires:	kernel-source
 BuildRequires:	linuxdoc-tools
 BuildRequires:  linux-atm-devel
+BuildRoot:	%_tmppath/%name-%version-%release-root
 Requires:	iputils
 Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 
