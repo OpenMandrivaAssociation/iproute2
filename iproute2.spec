@@ -9,8 +9,8 @@
 
 Summary: 	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version: 	2.6.23
-Release: 	%mkrel 2
+Version: 	2.6.25
+Release: 	%mkrel 1
 License: 	GPL
 Url:		http://linux-net.osdl.org/index.php/Iproute2
 Group:  	Networking/Other
@@ -19,10 +19,8 @@ Source: 	%{name}-%fver.tar.bz2
 # RH patches
 #Patch5 is fscking compilation against kernel22 in rh
 Patch6: iproute2-flags.patch
-# from Cross LFS
-Patch8: http://ftp.osuosl.org/pub/clfs/clfs-packages/svn/iproute2-2.6.23-libdir-1.patch
-# upstream patches
-Patch10:   iproute2.git-66e529f579f45351828fc82d6ba2629cc6eb3ddd.patch
+# rediffed from Cross LFS: http://ftp.osuosl.org/pub/clfs/clfs-packages/svn/
+Patch8: iproute2-2.6.25-libdir.patch
 # MDK patches
 Patch100: iproute2-def-echo.patch
 Patch102: iproute2-2.4.7-bashfix.patch
@@ -56,7 +54,6 @@ Documentation for iproute
 %setup -q -n %{name}-%fver
 %patch6 -p1 -b .flags
 %patch8 -p1 -b .libdir
-%patch10 -p1 -b .oldkernel
 
 %patch100 -p1
 %patch102 -p1 -b .bashfix
