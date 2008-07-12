@@ -8,7 +8,7 @@
 Summary: 	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	2.6.25
-Release:	%mkrel 2
+Release:	%mkrel 3
 License:	GPL
 Group:		Networking/Other
 Url:		http://linux-net.osdl.org/index.php/Iproute2
