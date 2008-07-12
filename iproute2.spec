@@ -73,14 +73,23 @@ Documentation for iproute
 %patch106 -p1 -b .build
 
 %build
-%define optflags -ggdb
+%serverbuild
+export CCOPTS="%{optflags} -ggdb"
+export SBINDIR=/sbin
+export LIBDIR=%{_libdir}
+export VARLIB=/var/lib
+export INCLUDEDIR=%{_includedir}
+
+# (tpg) set explicit path for iptables
+sed -i -e 's#IPT_PATH#/%{_lib}/iptables#g' include/iptables.h
+
 %make KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=%{_libdir}
 %make -C doc
 
 %install
 rm -rf %{buildroot}
 
-%makeinstall_std SBINDIR=/sbin LIBDIR=%{_libdir}
+%makeinstall_std SBINDIR=/sbin LIBDIR=%{_libdir} VARLIB=/var/lib
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 
 # do not add q_atm.so for the moment, as it will pull libatm, and 
