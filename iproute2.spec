@@ -5,10 +5,12 @@
 %define fver %version
 %endif
 
+%define staticdevelname %mklibname %{name} -d -s
+
 Summary: 	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	2.6.25
-Release:	%mkrel 3
+Release:	%mkrel 4
 License:	GPL
 Group:		Networking/Other
 Url:		http://linux-net.osdl.org/index.php/Iproute2
@@ -39,11 +41,12 @@ example) which are designed to use the advanced networking capabilities of the
 Linux 2.2.x kernels and later,  such as policy routing, fast NAT and packet
 scheduling.
 
-%package	devel
+%package -n	%{staticdevelname}
 Summary:	Development files for iproute2
 Group:  	Development/C
+Provides:	iproute2-devel = %{version}-%{release}
 
-%description	devel
+%description -n	%{staticdevelname}
 The iproute package contains networking utilities (ip, tc and rtmon, for
 example) which are designed to use the advanced networking capabilities of the
 Linux 2.2.x kernels and later,  such as policy routing, fast NAT and packet
@@ -104,7 +107,7 @@ rm -rf %{buildroot}
 %_mandir/man3/*
 %_libdir/tc/
 
-%files devel
+%files -n %{staticdevelname}
 %defattr (-,root,root)
 %{_includedir}/*.h
 %{_libdir}/*.a
