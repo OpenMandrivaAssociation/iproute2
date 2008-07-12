@@ -1,5 +1,3 @@
-# sync: rh-2.4.7-7
-
 %define snap 0
 %if %{snap}
 %define fver %version-%snap
@@ -9,48 +7,59 @@
 
 Summary: 	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version: 	2.6.25
-Release: 	%mkrel 1
-License: 	GPL
+Version:	2.6.25
+Release:	%mkrel 2
+License:	GPL
+Group:		Networking/Other
 Url:		http://linux-net.osdl.org/index.php/Iproute2
-Group:  	Networking/Other
-Source2: iproute2-man8.tar.bz2
-Source: 	%{name}-%fver.tar.bz2
+Source0:	%{name}-%fver.tar.bz2
+Source2:	iproute2-man8.tar.bz2
 # RH patches
 #Patch5 is fscking compilation against kernel22 in rh
-Patch6: iproute2-flags.patch
+Patch6:		iproute2-flags.patch
 # rediffed from Cross LFS: http://ftp.osuosl.org/pub/clfs/clfs-packages/svn/
-Patch8: iproute2-2.6.25-libdir.patch
+Patch8:		iproute2-2.6.25-libdir.patch
 # MDK patches
-Patch100: iproute2-def-echo.patch
-Patch102: iproute2-2.4.7-bashfix.patch
-Patch105: iproute2-mult-deflt-gateways.patch
-Patch106: iproute2-2.6.X-ss040702-build-fix.patch
+Patch100:	iproute2-def-echo.patch
+Patch102:	iproute2-2.4.7-bashfix.patch
+Patch105:	iproute2-mult-deflt-gateways.patch
+Patch106:	iproute2-2.6.X-ss040702-build-fix.patch
 BuildRequires:	bison
 BuildRequires:	db4-devel
 BuildRequires:	flex
 BuildRequires:	kernel-source
 BuildRequires:	linuxdoc-tools
 BuildRequires:  linux-atm-devel
-BuildRoot:	%_tmppath/%name-%version-%release-root
 Requires:	iputils
-Buildroot:	%{_tmppath}/%{name}-%{version}-%{release}-root
-
-%package doc
-Summary: Documentation for Advanced IP routing and network device configuration tools
-Group:  	Networking/Other
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
-The iproute package contains networking utilities (ip, tc and rtmon,
-for example) which are designed to use the advanced networking
-capabilities of the Linux 2.2.x kernels and later,  such as policy 
-routing, fast NAT and packet scheduling.
+The iproute package contains networking utilities (ip, tc and rtmon, for
+example) which are designed to use the advanced networking capabilities of the
+Linux 2.2.x kernels and later,  such as policy routing, fast NAT and packet
+scheduling.
 
+%package	devel
+Summary:	Development files for iproute2
+Group:  	Development/C
 
-%description doc
+%description	devel
+The iproute package contains networking utilities (ip, tc and rtmon, for
+example) which are designed to use the advanced networking capabilities of the
+Linux 2.2.x kernels and later,  such as policy routing, fast NAT and packet
+scheduling.
+
+This package contains development files for iproute2.
+
+%package	doc
+Summary:	Documentation for Advanced IP routing and network device configuration tools
+Group:  	Networking/Other
+
+%description	doc
 Documentation for iproute
 
 %prep
+
 %setup -q -n %{name}-%fver
 %patch6 -p1 -b .flags
 %patch8 -p1 -b .libdir
@@ -66,7 +75,8 @@ Documentation for iproute
 %make -C doc
 
 %install
-rm -fr $RPM_BUILD_ROOT
+rm -rf %{buildroot}
+
 %makeinstall_std SBINDIR=/sbin LIBDIR=%{_libdir}
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 
@@ -74,10 +84,16 @@ mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 # iproute is required by basesystem
 rm %{buildroot}%{_libdir}/tc/q_atm.so
 mv %{buildroot}%{_docdir}/%{name} %{buildroot}%{_docdir}/%{name}-%{version}
-tar xfj %SOURCE2 -C %{buildroot}%{_mandir}
+tar -jxf %{SOURCE2} -C %{buildroot}%{_mandir}
+
+# development files
+install -d %{buildroot}%{_libdir}
+install -d %{buildroot}%{_includedir}
+install -m0644 lib/libnetlink.a %{buildroot}%{_libdir}/
+install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 
 %clean
-rm -fr %buildroot
+rm -rf %{buildroot}
 
 %files
 %defattr (-,root,root)
@@ -87,6 +103,11 @@ rm -fr %buildroot
 %_mandir/man8/*
 %_mandir/man3/*
 %_libdir/tc/
+
+%files devel
+%defattr (-,root,root)
+%{_includedir}/*.h
+%{_libdir}/*.a
 
 %files doc
 %defattr (-,root,root)
