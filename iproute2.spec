@@ -20,7 +20,7 @@ Source2:	iproute2-man8.tar.bz2
 #Patch5 is fscking compilation against kernel22 in rh
 Patch6:		iproute2-flags.patch
 # rediffed from Cross LFS: http://ftp.osuosl.org/pub/clfs/clfs-packages/svn/
-Patch8:		iproute2-2.6.25-libdir.patch
+Patch8:		iproute2-2.6.26-libdir.patch
 # MDK patches
 Patch100:	iproute2-def-echo.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
