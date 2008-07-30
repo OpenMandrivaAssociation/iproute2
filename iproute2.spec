@@ -23,6 +23,7 @@ Patch6:		iproute2-flags.patch
 Patch8:		iproute2-2.6.26-libdir.patch
 # MDK patches
 Patch100:	iproute2-def-echo.patch
+Patch101:	iproute2-2.6.26-ccopts.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
 Patch105:	iproute2-mult-deflt-gateways.patch
 Patch106:	iproute2-2.6.X-ss040702-build-fix.patch
@@ -68,6 +69,7 @@ Documentation for iproute
 %patch8 -p1 -b .libdir
 
 %patch100 -p1
+%patch101 -p1 -b .ccopts
 %patch102 -p1 -b .bashfix
 #%patch105 -p1 -b .make
 %patch106 -p1 -b .build
