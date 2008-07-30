@@ -92,6 +92,8 @@ sed -i -e 's#IPT_PATH#/%{_lib}/iptables#g' include/iptables.h
 rm -rf %{buildroot}
 
 %makeinstall_std SBINDIR=/sbin LIBDIR=%{_libdir} VARLIB=/var/lib
+mv %{buildroot}/share %{buildroot}%{_prefix}
+
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 
 # do not add q_atm.so for the moment, as it will pull libatm, and 
