@@ -68,7 +68,7 @@ Documentation for iproute
 %patch6 -p1 -b .flags
 %patch8 -p1 -b .libdir
 
-%patch100 -p1
+%patch100 -p0
 %patch101 -p1 -b .ccopts
 %patch102 -p1 -b .bashfix
 #%patch105 -p1 -b .make
