@@ -9,12 +9,12 @@
 
 Summary: 	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	2.6.26
-Release:	%mkrel 2
-License:	GPL
+Version:	2.6.28
+Release:	%mkrel 1
+License:	GPLv2+
 Group:		Networking/Other
 Url:		http://linux-net.osdl.org/index.php/Iproute2
-Source0:	%{name}-%fver.tar.bz2
+Source0:	http://devresources.linux-foundation.org/dev/iproute2/download/%{name}-%{version}.tar.bz2
 Source2:	iproute2-man8.tar.bz2
 # RH patches
 #Patch5 is fscking compilation against kernel22 in rh
