@@ -3,12 +3,11 @@
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	2.6.28
-Release:	%mkrel 1
+Release:	%mkrel 2
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
 Source0:	http://devresources.linux-foundation.org/dev/iproute2/download/%{name}-%{version}.tar.bz2
-Source2:	iproute2-man8.tar.bz2
 # RH patches
 # rediffed from Cross LFS: http://ftp.osuosl.org/pub/clfs/clfs-packages/svn/
 # (tpg) partially upstream accepted
@@ -86,7 +85,6 @@ rm -rf %{buildroot}
 %makeinstall_std SBINDIR=/sbin LIBDIR=/%{_lib} VARLIB=/var/lib MANDIR=%{_mandir} DOCDIR=%{_docdir}/%{name}-%{version}
 
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
-tar -jxf %{SOURCE2} -C %{buildroot}%{_mandir}
 
 # development files
 install -d %{buildroot}%{_includedir}
