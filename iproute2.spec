@@ -1,29 +1,33 @@
 %define staticdevelname %mklibname %{name} -d -s
+%define realver 2.6.29-1
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	2.6.28
-Release:	%mkrel 2
+Version:	%(echo %realver | sed -e 's/-/./')
+Release:	%mkrel 1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
-Source0:	http://devresources.linux-foundation.org/dev/iproute2/download/%{name}-%{version}.tar.bz2
+Source0:	http://devresources.linux-foundation.org/dev/iproute2/download/%{name}-%{realver}.tar.bz2
 # RH patches
 # rediffed from Cross LFS: http://ftp.osuosl.org/pub/clfs/clfs-packages/svn/
 # (tpg) partially upstream accepted
-Patch8:		iproute2-2.6.28-libdir.patch
+Patch8:		iproute2-2.6.29-1-libdir.patch
 # MDK patches
 Patch100:	iproute2-def-echo.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
 Patch106:	iproute2-2.6.X-ss040702-build-fix.patch
 Patch107:	iproute2-2.6.28-segfault.patch
 Patch108:	iproute2-2.6.28-format_not_a_string_literal_and_no_format_arguments.patch
+Patch109:	iproute2-2.6.29-1-IPPROTO_IP_for_SA.patch
+Patch110:	iproute2-2.6.29-1-display_ip4ip6tunnels.patch
 BuildRequires:	bison
 BuildRequires:	db4-devel
 BuildRequires:	flex
 BuildRequires:	kernel-source
 BuildRequires:	linuxdoc-tools
 BuildRequires:	linux-atm-devel
+BuildRequires:	iptables-devel
 Requires:	iputils
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
@@ -55,7 +59,7 @@ Documentation for iproute2.
 
 %prep
 
-%setup -q
+%setup -qn %{name}-%{realver}
 %patch8 -p1 -b .libdir
 
 %patch100 -p0
@@ -63,15 +67,19 @@ Documentation for iproute2.
 %patch106 -p1 -b .build
 %patch107 -p1 -b .segv
 %patch108 -p1
+%patch109 -p1
+%patch110 -p1
 
 %build
 %serverbuild
 %setup_compile_flags
-export CCOPTS="%{optflags} -ggdb"
+export CFLAGS="%{optflags} -fno-strict-aliasing"
+export CCOPTS="%{optflags} -ggdb -fno-strict-aliasing"
 export SBINDIR=/sbin
 export LIBDIR=/%{_lib}
-export VARLIB=/var/lib
+export ARPDIR=/var/lib
 export INCLUDEDIR=%{_includedir}
+export IPT_LIB_DIR=/%{_lib}/iptables
 
 # (tpg) don't use macro here
 ./configure
@@ -82,7 +90,7 @@ export INCLUDEDIR=%{_includedir}
 %install
 rm -rf %{buildroot}
 
-%makeinstall_std SBINDIR=/sbin LIBDIR=/%{_lib} VARLIB=/var/lib MANDIR=%{_mandir} DOCDIR=%{_docdir}/%{name}-%{version}
+%makeinstall_std SBINDIR=/sbin LIBDIR=/%{_lib} ARPDIR=/var/lib MANDIR=%{_mandir} DOCDIR=%{_docdir}/%{name}-%{version}
 
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 
