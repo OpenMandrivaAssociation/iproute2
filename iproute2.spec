@@ -4,7 +4,7 @@
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	%(echo %realver | sed -e 's/-/./')
-Release:	%mkrel 1
+Release:	%mkrel 2
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -85,7 +85,8 @@ export IPT_LIB_DIR=/%{_lib}/iptables
 ./configure
 
 %make KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib}
-%make -C doc
+# Doc generation fails with -j24 (ecrm1000 used before generation)
+make -C doc
 
 %install
 rm -rf %{buildroot}
