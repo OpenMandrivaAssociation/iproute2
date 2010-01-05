@@ -1,10 +1,10 @@
 %define staticdevelname %mklibname %{name} -d -s
-%define realver 2.6.29-1
+%define realver 2.6.31
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	%(echo %realver | sed -e 's/-/./')
-Release:	%mkrel 2
+Release:	%mkrel 1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -12,7 +12,7 @@ Source0:	http://devresources.linux-foundation.org/dev/iproute2/download/%{name}-
 # RH patches
 # rediffed from Cross LFS: http://ftp.osuosl.org/pub/clfs/clfs-packages/svn/
 # (tpg) partially upstream accepted
-Patch8:		iproute2-2.6.29-1-libdir.patch
+Patch8:		iproute2-2.6.31-libdir.patch
 # MDK patches
 Patch100:	iproute2-def-echo.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
@@ -20,7 +20,7 @@ Patch106:	iproute2-2.6.X-ss040702-build-fix.patch
 Patch107:	iproute2-2.6.28-segfault.patch
 Patch108:	iproute2-2.6.28-format_not_a_string_literal_and_no_format_arguments.patch
 Patch109:	iproute2-2.6.29-1-IPPROTO_IP_for_SA.patch
-Patch110:	iproute2-2.6.29-1-display_ip4ip6tunnels.patch
+Patch110:	iproute2-2.6.31-q_atm-ld-uneeded.patch
 BuildRequires:	bison
 BuildRequires:	db4-devel
 BuildRequires:	flex
