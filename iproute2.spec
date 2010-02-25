@@ -1,5 +1,5 @@
 %define staticdevelname %mklibname %{name} -d -s
-%define realver 2.6.31
+%define realver 2.6.33
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
