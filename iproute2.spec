@@ -1,5 +1,5 @@
 %define staticdevelname %mklibname %{name} -d -s
-%define realver 2.6.33
+%define realver 2.6.34
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
@@ -20,7 +20,7 @@ Patch106:	iproute2-2.6.X-ss040702-build-fix.patch
 Patch107:	iproute2-2.6.28-segfault.patch
 Patch108:	iproute2-2.6.28-format_not_a_string_literal_and_no_format_arguments.patch
 Patch109:	iproute2-2.6.29-1-IPPROTO_IP_for_SA.patch
-Patch110:	iproute2-2.6.31-q_atm-ld-uneeded.patch
+Patch110:	iproute2-2.6.34-q_atm-ld-uneeded.patch
 BuildRequires:	bison
 BuildRequires:	db4-devel
 BuildRequires:	flex
@@ -74,7 +74,7 @@ Documentation for iproute2.
 %serverbuild
 %setup_compile_flags
 export CFLAGS="%{optflags} -fno-strict-aliasing"
-export CCOPTS="%{optflags} -ggdb -fno-strict-aliasing"
+export CCOPTS="%{optflags} -ggdb -fno-strict-aliasing -D_GNU_SOURCE -Wstrict-prototypes -fPIC"
 export SBINDIR=/sbin
 export LIBDIR=/%{_lib}
 export ARPDIR=/var/lib
