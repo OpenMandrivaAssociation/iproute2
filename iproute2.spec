@@ -3,8 +3,8 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	%(echo %realver | sed -e 's/-/./')
-Release:	%mkrel 1
+Version:	%realver
+Release:	%mkrel 2
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -16,13 +16,12 @@ Patch8:		iproute2-2.6.37-libdir.patch
 # MDK patches
 Patch100:	iproute2-def-echo.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
-Patch106:	iproute2-2.6.X-ss040702-build-fix.patch
 Patch107:	iproute2-2.6.28-segfault.patch
 Patch108:	iproute2-2.6.31-error-format-security.patch
 Patch109:	iproute2-2.6.29-1-IPPROTO_IP_for_SA.patch
 Patch110:	iproute2-2.6.34-q_atm-ld-uneeded.patch
 BuildRequires:	bison
-BuildRequires:	db4-devel
+BuildRequires:	db-devel
 BuildRequires:	flex
 BuildRequires:	kernel-source
 BuildRequires:	linuxdoc-tools
@@ -64,7 +63,6 @@ Documentation for iproute2.
 
 %patch100 -p0
 %patch102 -p1 -b .bashfix
-%patch106 -p1 -b .build
 %patch107 -p1 -b .segv
 %patch108 -p1
 %patch109 -p1
@@ -84,7 +82,7 @@ export IPT_LIB_DIR=/%{_lib}/iptables
 # (tpg) don't use macro here
 ./configure
 
-%make KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib}
+%make KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib} DBM_INCLUDE=%{_includedir}/db51
 # Doc generation fails with -j24 (ecrm1000 used before generation)
 make -C doc
 
