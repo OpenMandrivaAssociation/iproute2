@@ -4,7 +4,7 @@
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	%realver
-Release:	%mkrel 2
+Release:	%mkrel 3
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -20,6 +20,7 @@ Patch107:	iproute2-2.6.28-segfault.patch
 Patch108:	iproute2-2.6.31-error-format-security.patch
 Patch109:	iproute2-2.6.29-1-IPPROTO_IP_for_SA.patch
 Patch110:	iproute2-2.6.34-q_atm-ld-uneeded.patch
+Patch111:	iproute2-2.6.39-xtables6.patch
 BuildRequires:	bison
 BuildRequires:	db-devel
 BuildRequires:	flex
@@ -67,6 +68,7 @@ Documentation for iproute2.
 %patch108 -p1
 %patch109 -p1
 %patch110 -p1
+%patch111 -p1
 
 %build
 %serverbuild
