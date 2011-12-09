@@ -4,7 +4,7 @@
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	%realver
-Release:	%mkrel 3
+Release:	4
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -29,7 +29,6 @@ BuildRequires:	linuxdoc-tools
 BuildRequires:	linux-atm-devel
 BuildRequires:	iptables-devel
 Requires:	iputils
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 The iproute package contains networking utilities (ip, tc and rtmon, for
@@ -100,11 +99,7 @@ install -d %{buildroot}%{_includedir}
 install -m0644 lib/libnetlink.a %{buildroot}/%{_lib}/
 install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 
-%clean
-rm -rf %{buildroot}
-
 %files
-%defattr(-,root,root)
 %dir %{_sysconfdir}/iproute2
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/iproute2/*
 /sbin/*
@@ -113,12 +108,10 @@ rm -rf %{buildroot}
 %{_mandir}/man3/*
 
 %files -n %{staticdevelname}
-%defattr (-,root,root)
 %{_includedir}/*.h
 /%{_lib}/*.a
 
 %files doc
-%defattr (-,root,root)
 %doc README README.iproute2+tc RELNOTES README.decnet
 %doc doc/*.dvi doc/*.ps doc/Plan
 %doc %{_docdir}/%{name}-%{version}/*.sgml
