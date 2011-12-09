@@ -27,7 +27,7 @@ BuildRequires:	db-devel
 BuildRequires:	flex
 BuildRequires:	kernel-source
 # (oe) note: building the docs pulls in thousands of texlive packages.
-BuildRequires:	linuxdoc-tools texlive-fonts texlive-ec texlive-url
+BuildRequires:	linuxdoc-tools texlive texlive-fonts texlive-ec texlive-url
 BuildRequires:	linux-atm-devel
 BuildRequires:	iptables-devel
 Requires:	iputils
