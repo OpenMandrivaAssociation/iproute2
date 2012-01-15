@@ -3,7 +3,7 @@
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	3.2.0
-Release:	1
+Release:	2
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -19,7 +19,6 @@ Patch10:	iproute2-2.6.39-lnstat-dump-to-stdout.patch
 # MDK patches
 Patch100:	iproute2-3.2.0-def-echo.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
-Patch106:	iproute2-2.6.X-ss040702-build-fix.patch
 Patch109:	iproute2-3.2.0-IPPROTO_IP_for_SA.patch
 Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
 BuildRequires:	bison
@@ -73,7 +72,6 @@ Documentation for iproute2.
 # mandriva patches
 %patch100 -p1 -b .def-echo
 %patch102 -p1 -b .bashfix
-%patch106 -p1 -b .build
 %patch109 -p1 -b .IPPROTO_IP_for_SA
 %patch110 -p1 -b .q_atm-ld-uneeded
 
