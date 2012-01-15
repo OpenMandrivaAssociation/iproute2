@@ -2,7 +2,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	3.1.0
+Version:	3.2.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -11,17 +11,17 @@ Source0:	http://kernel.org/pub/linux/utils/net/iproute2/iproute2-%{version}.tar.
 # RH patches
 # rediffed from Cross LFS: http://ftp.osuosl.org/pub/clfs/clfs-packages/svn/
 # (tpg) partially upstream accepted
-Patch5:		iproute2-2.6.37-libdir.patch
+Patch5:		iproute2-3.2.0-libdir.patch
 Patch7:		iproute2-2.6.35-print-route.patch
 Patch8:		iproute2-print-route-u32.patch
 Patch9:		iproute2-2.6.39-create-peer-veth-without-a-name.patch
 Patch10:	iproute2-2.6.39-lnstat-dump-to-stdout.patch
 # MDK patches
-Patch100:	iproute2-def-echo.patch
+Patch100:	iproute2-3.2.0-def-echo.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
-Patch107:	iproute2-2.6.28-segfault.patch
-Patch109:	iproute2-2.6.29-1-IPPROTO_IP_for_SA.patch
-Patch110:	iproute2-2.6.34-q_atm-ld-uneeded.patch
+Patch106:	iproute2-2.6.X-ss040702-build-fix.patch
+Patch109:	iproute2-3.2.0-IPPROTO_IP_for_SA.patch
+Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
 BuildRequires:	bison
 BuildRequires:	db-devel
 BuildRequires:	flex
@@ -30,6 +30,7 @@ BuildRequires:	kernel-source
 BuildRequires:	linuxdoc-tools texlive texlive-fonts texlive-ec texlive-url
 BuildRequires:	linux-atm-devel
 BuildRequires:	iptables-devel
+Buildrequires:	pkgconfig(libnl-1)
 Requires:	iputils
 
 %description
@@ -70,11 +71,11 @@ Documentation for iproute2.
 %patch10 -p1 -b .lnstat-dump-to-stdout
 
 # mandriva patches
-%patch100 -p0
+%patch100 -p1 -b .def-echo
 %patch102 -p1 -b .bashfix
-%patch107 -p0 -b .segv
-%patch109 -p1
-%patch110 -p0
+%patch106 -p1 -b .build
+%patch109 -p1 -b .IPPROTO_IP_for_SA
+%patch110 -p1 -b .q_atm-ld-uneeded
 
 %build
 %serverbuild
