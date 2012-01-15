@@ -28,6 +28,7 @@ BuildRequires:	kernel-source
 # (oe) note: building the docs pulls in thousands of texlive packages.
 BuildRequires:	linuxdoc-tools texlive texlive-fonts texlive-ec texlive-url
 BuildRequires:	linux-atm-devel
+BuildRequires:	iptables
 BuildRequires:	iptables-devel
 Buildrequires:	pkgconfig(libnl-1)
 Requires:	iputils
