@@ -1,3 +1,4 @@
+%define build_doc 0
 %define staticdevelname %mklibname %{name} -d -s
 
 Summary:	Advanced IP routing and network device configuration tools
@@ -22,11 +23,13 @@ Patch102:	iproute2-2.4.7-bashfix.patch
 Patch109:	iproute2-3.2.0-IPPROTO_IP_for_SA.patch
 Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
 BuildRequires:	bison
-BuildRequires:	db-devel
+BuildRequires:	db5-devel
 BuildRequires:	flex
 BuildRequires:	kernel-source
 # (oe) note: building the docs pulls in thousands of texlive packages.
+%if %{build_doc}
 BuildRequires:	linuxdoc-tools texlive texlive-fonts texlive-ec texlive-url
+%endif
 BuildRequires:	linux-atm-devel
 BuildRequires:	iptables
 BuildRequires:	iptables-devel
@@ -60,9 +63,7 @@ Group:		Networking/Other
 Documentation for iproute2.
 
 %prep
-
-%setup -q -n %{name}-%{version}
-
+%setup -q
 # fedora patches
 %patch5 -p1 -b .libdir
 %patch7 -p1 -b .print-route
@@ -94,7 +95,9 @@ export LATEST_BDB_INCLUDE_DIR=`ls -1d /usr/include/db[0-9]*`
 %make KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib} DBM_INCLUDE=$LATEST_BDB_INCLUDE_DIR
 
 # Doc generation fails with -j24 (ecrm1000 used before generation)
+%if %{build_doc}
 make -C doc
+%endif
 
 %install
 rm -rf %{buildroot}
@@ -137,8 +140,11 @@ install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 /%{_lib}/*.a
 
 %files doc
-%doc README README.iproute2+tc RELNOTES README.decnet
-%doc doc/*.dvi doc/*.ps doc/Plan
+%doc README README.iproute2+tc README.decnet
+%if %{build_doc}
+%doc doc/*.dvi doc/*.ps 
+%endif
+%doc doc/Plan
 %doc %{_docdir}/%{name}-%{version}/*.sgml
 %doc %{_docdir}/%{name}-%{version}/*.tex
 %doc %{_docdir}/%{name}-%{version}/examples
