@@ -3,24 +3,29 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	3.4.0
+Version:	3.5.1
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
 Source0:	http://kernel.org/pub/linux/utils/net/iproute2/iproute2-%{version}.tar.xz
-# RH patches
-# rediffed from Cross LFS: http://ftp.osuosl.org/pub/clfs/clfs-packages/svn/
-# (tpg) partially upstream accepted
-Patch5:		iproute2-3.2.0-libdir.patch
-Patch7:		iproute2-2.6.35-print-route.patch
-Patch8:		iproute2-print-route-u32.patch
-Patch9:		iproute2-2.6.39-create-peer-veth-without-a-name.patch
-Patch10:	iproute2-2.6.39-lnstat-dump-to-stdout.patch
+
+
+Patch0:             man-pages.patch
+Patch1:             iproute2-3.4.0-kernel.patch
+Patch2:             iproute2-3.5.0-optflags.patch
+Patch3:             iproute2-3.4.0-sharepath.patch
+Patch4:             iproute2-2.6.31-tc_modules.patch
+Patch5:             iproute2-2.6.29-IPPROTO_IP_for_SA.patch
+Patch6:             iproute2-example-cbq-service.patch
+Patch7:             iproute2-2.6.35-print-route.patch
+Patch8:             iproute2-2.6.39-create-peer-veth-without-a-name.patch
+Patch9:             iproute2-2.6.39-lnstat-dump-to-stdout.patch
+
 # MDK patches
+
 Patch100:	iproute2-3.2.0-def-echo.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
-Patch109:	iproute2-3.2.0-IPPROTO_IP_for_SA.patch
 Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
 BuildRequires:	bison
 BuildRequires:	db5-devel
@@ -64,17 +69,23 @@ Documentation for iproute2.
 
 %prep
 %setup -q
-# fedora patches
-%patch5 -p1 -b .libdir
+
+%patch0 -p1
+sed -i "s/_VERSION_/%{version}/" man/man8/ss.8
+%patch1 -p1 -b .kernel
+%patch2 -p1 -b .opt_flags
+%patch3 -p1 -b .share
+%patch4 -p1 -b .ipt
+%patch5 -p1 -b .ipproto
+%patch6 -p1 -b .fix_cbq
 %patch7 -p1 -b .print-route
-%patch8 -p1 -b .print-route-u32
-%patch9 -p1 -b .peer-veth-without-name
-%patch10 -p1 -b .lnstat-dump-to-stdout
+%patch8 -p1 -b .peer-veth-without-name
+%patch9 -p1 -b .lnstat-dump-to-stdout
+
 
 # mandriva patches
 %patch100 -p1 -b .def-echo
 %patch102 -p1 -b .bashfix
-%patch109 -p1 -b .IPPROTO_IP_for_SA
 %patch110 -p1 -b .q_atm-ld-uneeded
 
 %build
