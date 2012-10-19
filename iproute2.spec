@@ -142,7 +142,7 @@ install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 /sbin/ss
 /sbin/tc
 /%{_lib}/tc
-%{_mandir}/man7/*
+#%{_mandir}/man7/*
 %{_mandir}/man8/*
 %{_mandir}/man3/*
 
