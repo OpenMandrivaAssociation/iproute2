@@ -3,24 +3,22 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	3.5.1
+Version:	3.6.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
 Source0:	http://kernel.org/pub/linux/utils/net/iproute2/iproute2-%{version}.tar.xz
-
-
-Patch0:             man-pages.patch
-Patch1:             iproute2-3.4.0-kernel.patch
-Patch2:             iproute2-3.5.0-optflags.patch
-Patch3:             iproute2-3.4.0-sharepath.patch
-Patch4:             iproute2-2.6.31-tc_modules.patch
-Patch5:             iproute2-2.6.29-IPPROTO_IP_for_SA.patch
-Patch6:             iproute2-example-cbq-service.patch
-Patch7:             iproute2-2.6.35-print-route.patch
-Patch8:             iproute2-2.6.39-create-peer-veth-without-a-name.patch
-Patch9:             iproute2-2.6.39-lnstat-dump-to-stdout.patch
+Patch0:		man-pages.patch
+Patch1:		iproute2-3.4.0-kernel.patch
+Patch2:		iproute2-3.5.0-optflags.patch
+Patch3:		iproute2-3.4.0-sharepath.patch
+Patch4:		iproute2-2.6.31-tc_modules.patch
+Patch5:		iproute2-2.6.29-IPPROTO_IP_for_SA.patch
+Patch6:		iproute2-example-cbq-service.patch
+Patch7:		iproute2-2.6.35-print-route.patch
+Patch8:		iproute2-2.6.39-create-peer-veth-without-a-name.patch
+Patch9:		iproute2-2.6.39-lnstat-dump-to-stdout.patch
 
 # MDK patches
 
@@ -33,7 +31,11 @@ BuildRequires:	flex
 BuildRequires:	kernel-source
 # (oe) note: building the docs pulls in thousands of texlive packages.
 %if %{build_doc}
-BuildRequires:	linuxdoc-tools texlive texlive-fonts texlive-ec texlive-url
+BuildRequires:	linuxdoc-tools
+BuildRequires:	texlive
+BuildRequires:	texlive-fonts
+BuildRequires:	texlive-ec
+BuildRequires:	texlive-url
 %endif
 BuildRequires:	linux-atm-devel
 BuildRequires:	iptables
@@ -111,8 +113,6 @@ make -C doc
 %endif
 
 %install
-rm -rf %{buildroot}
-
 %makeinstall_std SBINDIR=/sbin LIBDIR=/%{_lib} ARPDIR=/var/lib MANDIR=%{_mandir} DOCDIR=%{_docdir}/%{name}-%{version}
 
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
