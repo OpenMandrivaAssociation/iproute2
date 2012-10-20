@@ -125,6 +125,7 @@ install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 %files
 %dir %{_sysconfdir}/iproute2
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/iproute2/*
+/sbin/bridge
 /sbin/ctstat
 /sbin/genl
 /sbin/ifcfg
