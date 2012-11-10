@@ -1,0 +1,12 @@
+diff -ur iproute2.orig/ip/ifcfg iproute2/ip/ifcfg
+--- iproute2.orig/ip/ifcfg	2000-04-16 19:42:50.000000000 +0200
++++ iproute2/ip/ifcfg	2002-07-07 18:45:42.000000000 +0200
+@@ -21,7 +21,7 @@
+ ABCMaskLen () {
+   local class;
+ 
+-  class=${1%%.*}
++  typeset -i class=${1%%.*}
+   if [ "$1" = "" -o $class -eq 0 -o $class -ge 224 ]; then return 0
+   elif [ $class -ge 224 ]; then return 0
+   elif [ $class -ge 192 ]; then return 24
