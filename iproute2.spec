@@ -26,9 +26,13 @@ Patch100:	iproute2-3.2.0-def-echo.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
 Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
 BuildRequires:	bison
-BuildRequires:	db5-devel
 BuildRequires:	flex
+BuildRequires:	iptables
 BuildRequires:	kernel-source
+BuildRequires:	db5-devel
+BuildRequires:	linux-atm-devel
+Buildrequires:	pkgconfig(libnl-1)
+BuildRequires:	pkgconfig(xtables)
 # (oe) note: building the docs pulls in thousands of texlive packages.
 %if %{build_doc}
 BuildRequires:	linuxdoc-tools
@@ -37,10 +41,6 @@ BuildRequires:	texlive-fonts
 BuildRequires:	texlive-ec
 BuildRequires:	texlive-url
 %endif
-BuildRequires:	linux-atm-devel
-BuildRequires:	iptables
-BuildRequires:	iptables-devel
-Buildrequires:	pkgconfig(libnl-1)
 Requires:	iputils
 
 %description
@@ -71,24 +71,8 @@ Documentation for iproute2.
 
 %prep
 %setup -q
-
-%patch0 -p1
+%apply_patches
 sed -i "s/_VERSION_/%{version}/" man/man8/ss.8
-%patch1 -p1 -b .kernel
-%patch2 -p1 -b .opt_flags
-%patch3 -p1 -b .share
-%patch4 -p1 -b .ipt
-%patch5 -p1 -b .ipproto
-%patch6 -p1 -b .fix_cbq
-%patch7 -p1 -b .print-route
-%patch8 -p1 -b .peer-veth-without-name
-%patch9 -p1 -b .lnstat-dump-to-stdout
-
-
-# mandriva patches
-%patch100 -p1 -b .def-echo
-%patch102 -p1 -b .bashfix
-%patch110 -p1 -b .q_atm-ld-uneeded
 
 %build
 %serverbuild
@@ -113,7 +97,10 @@ make -C doc
 %endif
 
 %install
-%makeinstall_std SBINDIR=/sbin LIBDIR=/%{_lib} ARPDIR=/var/lib MANDIR=%{_mandir} DOCDIR=%{_docdir}/%{name}-%{version}
+%makeinstall_std \
+	SBINDIR=/sbin LIBDIR=/%{_lib} \
+	ARPDIR=/var/lib MANDIR=%{_mandir} \
+	DOCDIR=%{_docdir}/%{name}-%{version}
 
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 
@@ -160,3 +147,4 @@ install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 %doc %{_docdir}/%{name}-%{version}/*.sgml
 %doc %{_docdir}/%{name}-%{version}/*.tex
 %doc %{_docdir}/%{name}-%{version}/examples
+
