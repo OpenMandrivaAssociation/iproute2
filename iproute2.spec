@@ -3,17 +3,15 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	3.6.0
-Release:	3
+Version:	3.9.0
+Release:	1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
 Source0:	http://kernel.org/pub/linux/utils/net/iproute2/iproute2-%{version}.tar.xz
 Patch0:		man-pages.patch
 Patch1:		iproute2-3.4.0-kernel.patch
-Patch2:		iproute2-3.5.0-optflags.patch
 Patch3:		iproute2-3.4.0-sharepath.patch
-Patch4:		iproute2-2.6.31-tc_modules.patch
 Patch5:		iproute2-2.6.29-IPPROTO_IP_for_SA.patch
 Patch6:		iproute2-example-cbq-service.patch
 Patch7:		iproute2-2.6.35-print-route.patch
@@ -77,17 +75,20 @@ sed -i "s/_VERSION_/%{version}/" man/man8/ss.8
 %build
 %serverbuild
 %setup_compile_flags
-export CFLAGS="%{optflags} -fno-strict-aliasing"
+export RPM_OPT_FLAGS="%{optflags} -fno-strict-aliasing"
 export CCOPTS="%{optflags} -ggdb -fno-strict-aliasing -D_GNU_SOURCE -Wstrict-prototypes -fPIC"
 export SBINDIR=/sbin
 export LIBDIR=/%{_lib}
 export ARPDIR=/var/lib
 export INCLUDEDIR=%{_includedir}
 export IPT_LIB_DIR=/%{_lib}/iptables
-export LATEST_BDB_INCLUDE_DIR=`ls -1d /usr/include/db[0-9]*`
+export LATEST_BDB_INCLUDE_DIR=`ls -1d /usr/include/db[0-9]* |tail -n1`
+
+sed -i -e 's,#define IPT_LIB_DIR.*,#define IPT_LIB_DIR "/%_lib/iptables",' include/iptables.h
 
 # (tpg) don't use macro here
 ./configure
+echo "CFLAGS += %{optflags} -fno-strict-aliasing -Wno-error -I$LATEST_BDB_INCLUDE_DIR" >>Config
 
 %make KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib} DBM_INCLUDE=$LATEST_BDB_INCLUDE_DIR
 
@@ -130,13 +131,13 @@ install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 /sbin/ss
 /sbin/tc
 /%{_lib}/tc
-#%{_mandir}/man7/*
+%{_mandir}/man7/*
 %{_mandir}/man8/*
-%{_mandir}/man3/*
 
 %files -n %{staticdevelname}
 %{_includedir}/*.h
 /%{_lib}/*.a
+%{_mandir}/man3/*
 
 %files doc
 %doc README README.iproute2+tc README.decnet

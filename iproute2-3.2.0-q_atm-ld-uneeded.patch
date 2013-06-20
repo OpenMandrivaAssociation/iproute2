@@ -1,6 +1,6 @@
---- iproute2-3.2.0/tc/Makefile.orig	2012-01-05 18:34:31.000000000 +0200
-+++ iproute2-3.2.0/tc/Makefile	2012-01-06 18:33:14.198502516 +0200
-@@ -123,13 +123,13 @@ clean:
+--- iproute2-3.9.0/tc/Makefile.0110~	2013-06-20 01:47:26.896308277 +0200
++++ iproute2-3.9.0/tc/Makefile	2013-06-20 01:48:06.624811603 +0200
+@@ -132,13 +132,13 @@ clean:
  	rm -f emp_ematch.yacc.*
  
  q_atm.so: q_atm.c
@@ -8,12 +8,12 @@
 +	$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o q_atm.so q_atm.c -latm
  
  m_xt.so: m_xt.c
--	$(CC) $(CFLAGS) $(LDFLAGS) -shared -fpic -o m_xt.so m_xt.c $$(pkg-config xtables --cflags --libs)
-+	$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o m_xt.so m_xt.c $$(pkg-config xtables --cflags --libs)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -shared -fpic -o m_xt.so m_xt.c $$($(PKG_CONFIG) xtables --cflags --libs)
++	$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o m_xt.so m_xt.c $$($(PKG_CONFIG) xtables --cflags --libs)
  
  m_xt_old.so: m_xt_old.c
--	$(CC) $(CFLAGS) $(LDFLAGS) -shared -fpic -o m_xt_old.so m_xt_old.c $$(pkg-config xtables --cflags --libs)
-+	$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o m_xt_old.so m_xt_old.c $$(pkg-config xtables --cflags --libs)
+-	$(CC) $(CFLAGS) $(LDFLAGS) -shared -fpic -o m_xt_old.so m_xt_old.c $$($(PKG_CONFIG) xtables --cflags --libs)
++	$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o m_xt_old.so m_xt_old.c $$($(PKG_CONFIG) xtables --cflags --libs)
  
- %.yacc.c: %.y
- 	$(YACC) $(YACCFLAGS) -o $@ $<
+ em_ipset.o: CFLAGS += $$($(PKG_CONFIG) xtables --cflags)
+ 
