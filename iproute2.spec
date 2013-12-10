@@ -3,8 +3,8 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	3.11.0
-Release:	5
+Version:	3.12.0
+Release:	1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -27,7 +27,7 @@ BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	iptables
 BuildRequires:	kernel-source
-BuildRequires:	db5-devel
+BuildRequires:	db60-devel
 BuildRequires:	linux-atm-devel
 Buildrequires:	pkgconfig(libnl-3.0)
 BuildRequires:	pkgconfig(xtables)

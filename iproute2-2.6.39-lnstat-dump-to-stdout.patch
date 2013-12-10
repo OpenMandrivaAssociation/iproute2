@@ -1,13 +1,11 @@
-diff --git a/misc/lnstat.c b/misc/lnstat.c
-index 32ab6a4..431bfc7 100644
---- a/misc/lnstat.c
-+++ b/misc/lnstat.c
-@@ -322,7 +322,7 @@ int main(int argc, char **argv)
- 		int i;
- 		struct table_hdr *header;
+--- iproute2-3.12.0/misc/lnstat.c.0009~	2013-12-10 20:26:44.875979149 +0100
++++ iproute2-3.12.0/misc/lnstat.c	2013-12-10 20:27:08.009689938 +0100
+@@ -351,7 +351,7 @@ int main(int argc, char **argv)
+ 
+ 	switch (mode) {
  	case MODE_DUMP:
 -		lnstat_dump(stderr, lnstat_files);
 +		lnstat_dump(stdout, lnstat_files);
  		break;
- 	case MODE_NORMAL:
  
+ 	case MODE_NORMAL:
