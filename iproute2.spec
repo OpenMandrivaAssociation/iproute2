@@ -3,8 +3,8 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	3.12.0
-Release:	3
+Version:	3.16.0
+Release:	1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -15,7 +15,6 @@ Patch3:		iproute2-3.4.0-sharepath.patch
 Patch5:		iproute2-2.6.29-IPPROTO_IP_for_SA.patch
 Patch6:		iproute2-example-cbq-service.patch
 Patch7:		iproute2-2.6.35-print-route.patch
-Patch8:		iproute2-2.6.39-create-peer-veth-without-a-name.patch
 Patch9:		iproute2-2.6.39-lnstat-dump-to-stdout.patch
 
 # MDK patches
