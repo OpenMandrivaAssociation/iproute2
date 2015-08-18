@@ -1,27 +1,26 @@
 %define build_doc 0
+%define	cbq_version v0.7.3
 %define staticdevelname %mklibname %{name} -d -s
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	3.18.0
-Release:	3
+Version:	4.1.1
+Release:	1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
 Source0:	http://kernel.org/pub/linux/utils/net/iproute2/iproute2-%{version}.tar.xz
-Patch0:		man-pages.patch
-Patch1:		iproute2-3.4.0-kernel.patch
-Patch3:		iproute2-3.4.0-sharepath.patch
-Patch5:		iproute2-2.6.29-IPPROTO_IP_for_SA.patch
-Patch6:		iproute2-example-cbq-service.patch
+Source1:	cbq-0000.example
+Source2:	avpkt
+Patch0:		iproute2-3.19.0-docs.patch
 Patch7:		iproute2-2.6.35-print-route.patch
-Patch9:		iproute2-2.6.39-lnstat-dump-to-stdout.patch
 
 # MDK patches
 
 Patch100:	iproute2-3.2.0-def-echo.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
 Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
+
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	iptables
@@ -109,9 +108,22 @@ install -d %{buildroot}%{_includedir}
 install -m0644 lib/libnetlink.a %{buildroot}/%{_lib}/
 install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 
+# Config files
+install -m644 etc/iproute2/* %{buildroot}%{_sysconfdir}/iproute2
+
+mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/cbq
+for config in \
+    %{SOURCE1} \
+    %{SOURCE2}
+    do install -m644 ${config} %{buildroot}%{_sysconfdir}/sysconfig/cbq
+done
+
+
 %files
 %dir %{_sysconfdir}/iproute2
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/iproute2/*
+%dir %{_sysconfdir}/sysconfig/cbq
+%config(noreplace) %{_sysconfdir}/sysconfig/cbq/*
 /sbin/bridge
 /sbin/ctstat
 /sbin/genl
