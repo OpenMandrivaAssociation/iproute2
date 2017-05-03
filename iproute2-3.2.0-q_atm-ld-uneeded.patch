@@ -1,19 +1,21 @@
---- iproute2-3.9.0/tc/Makefile.0110~	2013-06-20 01:47:26.896308277 +0200
-+++ iproute2-3.9.0/tc/Makefile	2013-06-20 01:48:06.624811603 +0200
-@@ -132,13 +132,13 @@ clean:
+diff --git a/tc/Makefile b/tc/Makefile
+index 446a113..4f2a9fa 100644
+--- a/tc/Makefile
++++ b/tc/Makefile
+@@ -153,13 +153,13 @@ clean:
  	rm -f emp_ematch.yacc.*
  
  q_atm.so: q_atm.c
--	$(CC) $(CFLAGS) $(LDFLAGS) -shared -fpic -o q_atm.so q_atm.c -latm
-+	$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o q_atm.so q_atm.c -latm
+-	$(QUIET_CC)$(CC) $(CFLAGS) $(LDFLAGS) -shared -fpic -o q_atm.so q_atm.c -latm
++	$(QUIET_CC)$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o q_atm.so q_atm.c -latm
  
  m_xt.so: m_xt.c
--	$(CC) $(CFLAGS) $(LDFLAGS) -shared -fpic -o m_xt.so m_xt.c $$($(PKG_CONFIG) xtables --cflags --libs)
-+	$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o m_xt.so m_xt.c $$($(PKG_CONFIG) xtables --cflags --libs)
+-	$(QUIET_CC)$(CC) $(CFLAGS) $(LDFLAGS) -shared -fpic -o m_xt.so m_xt.c $$($(PKG_CONFIG) xtables --cflags --libs)
++	$(QUIET_CC)$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o m_xt.so m_xt.c $$($(PKG_CONFIG) xtables --cflags --libs)
  
  m_xt_old.so: m_xt_old.c
--	$(CC) $(CFLAGS) $(LDFLAGS) -shared -fpic -o m_xt_old.so m_xt_old.c $$($(PKG_CONFIG) xtables --cflags --libs)
-+	$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o m_xt_old.so m_xt_old.c $$($(PKG_CONFIG) xtables --cflags --libs)
+-	$(QUIET_CC)$(CC) $(CFLAGS) $(LDFLAGS) -shared -fpic -o m_xt_old.so m_xt_old.c $$($(PKG_CONFIG) xtables --cflags --libs)
++	$(QUIET_CC)$(CC) $(CFLAGS) $(LDFLAGS) -Wl,--undefined -shared -fpic -o m_xt_old.so m_xt_old.c $$($(PKG_CONFIG) xtables --cflags --libs)
  
  em_ipset.o: CFLAGS += $$($(PKG_CONFIG) xtables --cflags)
  

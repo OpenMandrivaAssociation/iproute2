@@ -4,15 +4,15 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	4.1.1
-Release:	3
+Version:	4.11.0
+Release:	1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
 Source0:	http://kernel.org/pub/linux/utils/net/iproute2/iproute2-%{version}.tar.xz
 Source1:	cbq-0000.example
 Source2:	avpkt
-Patch0:		iproute2-3.19.0-docs.patch
+#Patch0:		iproute2-3.19.0-docs.patch
 Patch7:		iproute2-2.6.35-print-route.patch
 
 # MDK patches
@@ -20,6 +20,7 @@ Patch7:		iproute2-2.6.35-print-route.patch
 Patch100:	iproute2-3.2.0-def-echo.patch
 Patch102:	iproute2-2.4.7-bashfix.patch
 Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
+Patch111:	fix-bdb-detection.patch
 
 BuildRequires:	bison
 BuildRequires:	flex
@@ -82,6 +83,7 @@ export INCLUDEDIR=%{_includedir}
 export IPT_LIB_DIR=/%{_lib}/iptables
 export LATEST_BDB_INCLUDE_DIR=`ls -1d /usr/include/db[0-9]* |tail -n1`
 
+sed -i -e '/^CC :=/d' -e "/^HOSTCC/s:=.*:= %{__cc}:" -e "/^WFLAGS/s:-Werror::" -e "/^DBM_INCLUDE/s:=.*:=$LATEST_BDB_INCLUDE_DIR:" Makefile
 sed -i -e 's,#define IPT_LIB_DIR.*,#define IPT_LIB_DIR "/%_lib/iptables",' include/iptables.h
 
 # (tpg) don't use macro here
@@ -89,6 +91,7 @@ sed -i -e 's,#define IPT_LIB_DIR.*,#define IPT_LIB_DIR "/%_lib/iptables",' inclu
 echo "CFLAGS += %{optflags} -fno-strict-aliasing -Wno-error -I$LATEST_BDB_INCLUDE_DIR" >>Config
 
 %make KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib} DBM_INCLUDE=$LATEST_BDB_INCLUDE_DIR
+
 
 # Doc generation fails with -j24 (ecrm1000 used before generation)
 %if %{build_doc}
@@ -153,7 +156,7 @@ done
 %files doc
 %doc README README.iproute2+tc README.decnet
 %if %{build_doc}
-%doc doc/*.dvi doc/*.ps 
+%doc doc/*.dvi doc/*.ps
 %endif
 %doc doc/Plan
 %doc %{_docdir}/%{name}-%{version}/*.sgml

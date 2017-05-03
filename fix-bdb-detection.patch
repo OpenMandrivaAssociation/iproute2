@@ -1,0 +1,13 @@
+diff --git a/configure b/configure
+index 88cbdb8..fc90627 100755
+--- a/configure
++++ b/configure
+@@ -314,7 +314,7 @@ int main(int argc, char **argv) {
+ 	return 0;
+ }
+ EOF
+-    $CC -I$INCLUDE -o $TMPDIR/dbtest $TMPDIR/dbtest.c -ldb >/dev/null 2>&1
++    $CC -I/usr/include/db61 -o $TMPDIR/dbtest $TMPDIR/dbtest.c -ldb >/dev/null 2>&1
+     if [ $? -eq 0 ]
+     then
+ 	echo "HAVE_BERKELEY_DB:=y" >>Config
