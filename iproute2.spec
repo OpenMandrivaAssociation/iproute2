@@ -66,6 +66,18 @@ Group:		Networking/Other
 %description doc
 Documentation for iproute2.
 
+%package tc
+Summary:	Linux Traffic Control utility
+Group:		Networking/Other
+License:	GPLv2+
+Obsoletes:	%{name} < 4.5.0
+Requires:	%{name} = %{version}-%{release}
+
+%description tc
+The Traffic Control utility manages queueing disciplines, their classes and
+attached filters and actions. It is the standard tool to configure QoS in
+Linux.
+
 %prep
 %setup -q
 %apply_patches
@@ -107,8 +119,8 @@ export SBINDIR='/sbin/'
 export MANDIR='%{_mandir}'
 export LIBDIR='/%{_lib}'
 export CONFDIR='%{_sysconfdir}/iproute2'
-export DOCDIR='%{_docdir}'
-make install
+export DOCDIR='%{_docdir}/%{name}-%{version}'
+make install DESTDIR="%{buildroot}"
 
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 
@@ -118,21 +130,16 @@ install -m0644 lib/libnetlink.a %{buildroot}/%{_lib}/
 install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 
 # Config files
-install -m644 etc/iproute2/* %{buildroot}%{_sysconfdir}/iproute2
+#install -m644 etc/iproute2/* %{buildroot}%{_sysconfdir}/iproute2
 
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/cbq
-for config in \
-    %{SOURCE1} \
-    %{SOURCE2}
-    do install -m644 ${config} %{buildroot}%{_sysconfdir}/sysconfig/cbq
-done
+install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 
+install -m755 examples/cbq.init-%{cbq_version} ${DESTDIR}/${SBINDIR}/cbq
 
 %files
 %dir %{_sysconfdir}/iproute2
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/iproute2/*
-%dir %{_sysconfdir}/sysconfig/cbq
-%config(noreplace) %{_sysconfdir}/sysconfig/cbq/*
 /sbin/bridge
 /sbin/ctstat
 /sbin/genl
@@ -149,13 +156,26 @@ done
 /sbin/rtpr
 /sbin/rtstat
 /sbin/ss
-/sbin/tc
-/%{_lib}/tc
+/sbin/devlink
+/sbin/tipc
 %{_mandir}/man7/*
 %{_mandir}/man8/*
+%exclude %{_mandir}/man7/tc-*
+%exclude %{_mandir}/man8/tc*
+
+%files tc
+%dir %{_sysconfdir}/sysconfig/cbq
+%config(noreplace) %{_sysconfdir}/sysconfig/cbq/*
+%{_datadir}/bash-completion/completions/tc
+%{_mandir}/man7/tc-*
+%{_mandir}/man8/tc*
+/%{_lib}/tc
+/sbin/tc
+/sbin/cbq
 
 %files -n %{staticdevelname}
 %{_includedir}/*.h
+%{_includedir}/%{name}/bpf_elf.h
 /%{_lib}/*.a
 %{_mandir}/man3/*
 
@@ -168,4 +188,3 @@ done
 %doc %{_docdir}/%{name}-%{version}/*.sgml
 %doc %{_docdir}/%{name}-%{version}/*.tex
 %doc %{_docdir}/%{name}-%{version}/examples
-
