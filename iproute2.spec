@@ -101,7 +101,7 @@ make -C doc
 %endif
 
 %install
-%make	DESTDIR=%{buildroot} \
+make	DESTDIR=%{buildroot} \
 	SBINDIR=/sbin LIBDIR=/%{_lib} \
 	ARPDIR=/var/lib MANDIR=%{_mandir} \
 	DOCDIR=%{_docdir}/%{name}-%{version} install
