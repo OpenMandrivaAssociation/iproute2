@@ -74,6 +74,7 @@ sed -i "s/_VERSION_/%{version}/" man/man8/ss.8
 %build
 %serverbuild
 %setup_compile_flags
+export
 export RPM_OPT_FLAGS="%{optflags} -fno-strict-aliasing"
 export CCOPTS="%{optflags} -ggdb -fno-strict-aliasing -D_GNU_SOURCE -Wstrict-prototypes -fPIC"
 export SBINDIR=/sbin
@@ -101,10 +102,13 @@ make -C doc
 %endif
 
 %install
-make	DESTDIR=%{buildroot} \
-	SBINDIR=/sbin LIBDIR=/%{_lib} \
-	ARPDIR=/var/lib MANDIR=%{_mandir} \
-	DOCDIR=%{_docdir}/%{name}-%{version} install
+export DESTDIR='%{buildroot}'
+export SBINDIR='/sbin/'
+export MANDIR='%{_mandir}'
+export LIBDIR='/%{_lib}'
+export CONFDIR='%{_sysconfdir}/iproute2'
+export DOCDIR='%{_docdir}'
+make install
 
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 
