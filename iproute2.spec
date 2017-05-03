@@ -101,10 +101,10 @@ make -C doc
 %endif
 
 %install
-%makeinstall_std \
+%make	DESTDIR=%{buildroot} \
 	SBINDIR=/sbin LIBDIR=/%{_lib} \
 	ARPDIR=/var/lib MANDIR=%{_mandir} \
-	DOCDIR=%{_docdir}/%{name}-%{version}
+	DOCDIR=%{_docdir}/%{name}-%{version} install
 
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 
