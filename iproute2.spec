@@ -85,10 +85,12 @@ export LATEST_BDB_INCLUDE_DIR=`ls -1d /usr/include/db[0-9]* |tail -n1`
 
 sed -i -e '/^CC :=/d' -e "/^HOSTCC/s:=.*:= %{__cc}:" -e "/^WFLAGS/s:-Werror::" -e "/^DBM_INCLUDE/s:=.*:=$LATEST_BDB_INCLUDE_DIR:" Makefile
 sed -i -e 's,#define IPT_LIB_DIR.*,#define IPT_LIB_DIR "/%_lib/iptables",' include/iptables.h
+sed -i "s!REPLACE_HEADERS!-I$LATEST_BDB_INCLUDE_DIR!g" configure
 
 # (tpg) don't use macro here
 ./configure
 echo "CFLAGS += %{optflags} -fno-strict-aliasing -Wno-error -I$LATEST_BDB_INCLUDE_DIR" >>Config
+echo "HAVE_SETNS:=y" >>Config
 
 %make KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib} DBM_INCLUDE=$LATEST_BDB_INCLUDE_DIR
 
