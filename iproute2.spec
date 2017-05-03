@@ -30,6 +30,7 @@ BuildRequires:	db6-devel
 BuildRequires:	linux-atm-devel
 Buildrequires:	pkgconfig(libnl-3.0)
 BuildRequires:	pkgconfig(xtables)
+BuildRequires:	pkgconfig(libmnl)
 # (oe) note: building the docs pulls in thousands of texlive packages.
 %if %{build_doc}
 BuildRequires:	linuxdoc-tools
