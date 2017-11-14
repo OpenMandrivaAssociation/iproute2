@@ -4,7 +4,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	4.11.0
+Version:	4.14.1
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -150,6 +150,7 @@ install -m755 examples/cbq.init-%{cbq_version} ${DESTDIR}/${SBINDIR}/cbq
 /sbin/iproute-arpd
 /sbin/lnstat
 /sbin/nstat
+/sbin/rdma
 /sbin/routef
 /sbin/routel
 /sbin/rtacct
@@ -185,7 +186,4 @@ install -m755 examples/cbq.init-%{cbq_version} ${DESTDIR}/${SBINDIR}/cbq
 %if %{build_doc}
 %doc doc/*.dvi doc/*.ps
 %endif
-%doc doc/Plan
-%doc %{_docdir}/%{name}-%{version}/*.sgml
-%doc %{_docdir}/%{name}-%{version}/*.tex
 %doc %{_docdir}/%{name}-%{version}/examples

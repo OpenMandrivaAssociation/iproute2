@@ -1,8 +1,6 @@
-diff --git a/configure b/configure
-index 88cbdb8..fc90627 100755
---- a/configure
-+++ b/configure
-@@ -314,7 +314,7 @@ int main(int argc, char **argv) {
+--- iproute2-4.14.1/configure.0111~	2017-11-14 12:00:48.708285970 +0100
++++ iproute2-4.14.1/configure	2017-11-14 12:01:37.776447098 +0100
+@@ -315,7 +315,7 @@ int main(int argc, char **argv) {
  	return 0;
  }
  EOF
@@ -10,4 +8,4 @@ index 88cbdb8..fc90627 100755
 +    $CC REPLACE_HEADERS -o $TMPDIR/dbtest $TMPDIR/dbtest.c -ldb >/dev/null 2>&1
      if [ $? -eq 0 ]
      then
- 	echo "HAVE_BERKELEY_DB:=y" >>Config
+ 	echo "HAVE_BERKELEY_DB:=y" >>$CONFIG
