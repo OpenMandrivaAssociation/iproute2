@@ -97,6 +97,17 @@ export INCLUDEDIR=%{_includedir}
 export IPT_LIB_DIR=/%{_lib}/iptables
 export LATEST_BDB_INCLUDE_DIR=`ls -1d /usr/include/db[0-9]* |tail -n1`
 
+
+# Use /run instead of /var/run.
+sed -i \
+	-e 's:/var/run:/run:g' \
+	include/namespace.h \
+	man/man8/ip-netns.8
+
+# build against system headers
+rm -r include/netinet #include/linux include/ip{,6}tables{,_common}.h include/libiptc
+sed -i 's:TCPI_OPT_ECN_SEEN:16:' misc/ss.c
+
 sed -i -e '/^CC :=/d' -e "/^HOSTCC/s:=.*:= %{__cc}:" -e "/^WFLAGS/s:-Werror::" -e "/^DBM_INCLUDE/s:=.*:=$LATEST_BDB_INCLUDE_DIR:" Makefile
 sed -i -e 's,#define IPT_LIB_DIR.*,#define IPT_LIB_DIR "/%_lib/iptables",' include/iptables.h
 sed -i "s!REPLACE_HEADERS!-I$LATEST_BDB_INCLUDE_DIR!g" configure
