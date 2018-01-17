@@ -28,7 +28,7 @@ BuildRequires:	iptables
 BuildRequires:	kernel-source
 BuildRequires:	db6-devel
 BuildRequires:	linux-atm-devel
-Buildrequires:	pkgconfig(libnl-3.0)
+BuildRequires:	pkgconfig(libnl-3.0)
 BuildRequires:	pkgconfig(xtables)
 BuildRequires:	pkgconfig(libmnl)
 # (oe) note: building the docs pulls in thousands of texlive packages.
@@ -50,7 +50,7 @@ scheduling.
 %package -n %{staticdevelname}
 Summary:	Development files for iproute2
 Group:		Development/C
-Provides:	iproute2-devel = %{version}-%{release}
+Provides:	iproute2-devel = %{EVRD}
 
 %description -n	%{staticdevelname}
 The iproute package contains networking utilities (ip, tc and rtmon, for
@@ -72,7 +72,7 @@ Summary:	Linux Traffic Control utility
 Group:		Networking/Other
 License:	GPLv2+
 Obsoletes:	%{name} < 4.5.0
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{EVRD}
 
 %description tc
 The Traffic Control utility manages queueing disciplines, their classes and
