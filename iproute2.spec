@@ -4,7 +4,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	4.14.1
+Version:	4.15.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -28,7 +28,7 @@ BuildRequires:	iptables
 BuildRequires:	kernel-source
 BuildRequires:	db6-devel
 BuildRequires:	linux-atm-devel
-Buildrequires:	pkgconfig(libnl-3.0)
+BuildRequires:	pkgconfig(libnl-3.0)
 BuildRequires:	pkgconfig(xtables)
 BuildRequires:	pkgconfig(libmnl)
 # (oe) note: building the docs pulls in thousands of texlive packages.
@@ -50,7 +50,7 @@ scheduling.
 %package -n %{staticdevelname}
 Summary:	Development files for iproute2
 Group:		Development/C
-Provides:	iproute2-devel = %{version}-%{release}
+Provides:	iproute2-devel = %{EVRD}
 
 %description -n	%{staticdevelname}
 The iproute package contains networking utilities (ip, tc and rtmon, for
@@ -72,7 +72,7 @@ Summary:	Linux Traffic Control utility
 Group:		Networking/Other
 License:	GPLv2+
 Obsoletes:	%{name} < 4.5.0
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{EVRD}
 
 %description tc
 The Traffic Control utility manages queueing disciplines, their classes and
@@ -109,7 +109,7 @@ rm -r include/netinet #include/linux include/ip{,6}tables{,_common}.h include/li
 sed -i 's:TCPI_OPT_ECN_SEEN:16:' misc/ss.c
 
 sed -i -e '/^CC :=/d' -e "/^HOSTCC/s:=.*:= %{__cc}:" -e "/^WFLAGS/s:-Werror::" -e "/^DBM_INCLUDE/s:=.*:=$LATEST_BDB_INCLUDE_DIR:" Makefile
-sed -i -e 's,#define IPT_LIB_DIR.*,#define IPT_LIB_DIR "/%_lib/iptables",' include/iptables.h
+sed -i -e 's,#define IPT_LIB_DIR.*,#define IPT_LIB_DIR "/%{_lib}/iptables",' include/iptables.h
 sed -i "s!REPLACE_HEADERS!-I$LATEST_BDB_INCLUDE_DIR!g" configure
 
 # (tpg) don't use macro here
