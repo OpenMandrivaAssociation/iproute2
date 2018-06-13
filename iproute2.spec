@@ -4,7 +4,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	4.16.0
+Version:	4.17.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -13,7 +13,6 @@ Source0:	http://kernel.org/pub/linux/utils/net/iproute2/iproute2-%{version}.tar.
 Source1:	cbq-0000.example
 Source2:	avpkt
 #Patch0:		iproute2-3.19.0-docs.patch
-Patch7:		iproute2-2.6.35-print-route.patch
 
 # MDK patches
 
