@@ -4,7 +4,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	4.17.0
+Version:	4.18.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
