@@ -1,10 +1,10 @@
 %define build_doc 0
-%define	cbq_version v0.7.3
+%define cbq_version v0.7.3
 %define staticdevelname %mklibname %{name} -d -s
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	4.18.0
+Version:	4.19.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -79,8 +79,7 @@ attached filters and actions. It is the standard tool to configure QoS in
 Linux.
 
 %prep
-%setup -q
-%apply_patches
+%autosetup -p1
 sed -i "s/_VERSION_/%{version}/" man/man8/ss.8
 
 %build
@@ -116,7 +115,7 @@ sed -i "s!REPLACE_HEADERS!-I$LATEST_BDB_INCLUDE_DIR!g" configure
 echo "CFLAGS += %{optflags} -fno-strict-aliasing -Wno-error -I$LATEST_BDB_INCLUDE_DIR" >>Config
 echo "HAVE_SETNS:=y" >>Config
 
-%make KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib} DBM_INCLUDE=$LATEST_BDB_INCLUDE_DIR
+%make_build KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib} DBM_INCLUDE=$LATEST_BDB_INCLUDE_DIR
 
 
 # Doc generation fails with -j24 (ecrm1000 used before generation)
