@@ -24,7 +24,7 @@ Patch111:	fix-bdb-detection.patch
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	iptables
-BuildRequires:	kernel-release-source
+BuildRequires:	kernel-source
 BuildRequires:	db6-devel
 BuildRequires:	linux-atm-devel
 BuildRequires:	pkgconfig(libnl-3.0)
