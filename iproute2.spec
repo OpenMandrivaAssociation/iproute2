@@ -4,8 +4,8 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	4.19.0
-Release:	2
+Version:	4.20.0
+Release:	1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -24,7 +24,7 @@ Patch111:	fix-bdb-detection.patch
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	iptables
-BuildRequires:	kernel-source
+BuildRequires:	kernel-release-source
 BuildRequires:	db6-devel
 BuildRequires:	linux-atm-devel
 BuildRequires:	pkgconfig(libnl-3.0)
@@ -93,8 +93,7 @@ export LIBDIR=/%{_lib}
 export ARPDIR=/var/lib
 export INCLUDEDIR=%{_includedir}
 export IPT_LIB_DIR=/%{_lib}/iptables
-export LATEST_BDB_INCLUDE_DIR=`ls -1d /usr/include/db[0-9]* |tail -n1`
-
+export LATEST_BDB_INCLUDE_DIR=$(ls -1d /usr/include/db[0-9]* |tail -n1)
 
 # Use /run instead of /var/run.
 sed -i \
@@ -116,7 +115,6 @@ echo "CFLAGS += %{optflags} -fno-strict-aliasing -Wno-error -I$LATEST_BDB_INCLUD
 echo "HAVE_SETNS:=y" >>Config
 
 %make_build KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib} DBM_INCLUDE=$LATEST_BDB_INCLUDE_DIR
-
 
 # Doc generation fails with -j24 (ecrm1000 used before generation)
 %if %{build_doc}
