@@ -143,7 +143,7 @@ install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/cbq
 install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 
-install -m755 examples/cbq.init-%{cbq_version} ${DESTDIR}/${SBINDIR}/cbq
+install -m755 examples/cbqinit.eth1 ${DESTDIR}/${SBINDIR}/cbq
 
 %files
 %dir %{_sysconfdir}/iproute2
