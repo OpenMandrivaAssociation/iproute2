@@ -1,11 +1,12 @@
---- iproute2-4.14.1/configure.0111~	2017-11-14 12:00:48.708285970 +0100
-+++ iproute2-4.14.1/configure	2017-11-14 12:01:37.776447098 +0100
-@@ -315,7 +315,7 @@ int main(int argc, char **argv) {
+diff -Naur iproute2-4.20.0/configure iproute2-4.20.0.tpg/configure
+--- iproute2-4.20.0/configure	2019-01-07 18:24:02.000000000 +0000
++++ iproute2-4.20.0.tpg/configure	2019-01-31 14:33:07.407536279 +0000
+@@ -276,7 +276,7 @@
  	return 0;
  }
  EOF
--    $CC -I$INCLUDE -o $TMPDIR/dbtest $TMPDIR/dbtest.c -ldb >/dev/null 2>&1
-+    $CC REPLACE_HEADERS -o $TMPDIR/dbtest $TMPDIR/dbtest.c -ldb >/dev/null 2>&1
-     if [ $? -eq 0 ]
-     then
+-    if $CC -I$INCLUDE -o $TMPDIR/dbtest $TMPDIR/dbtest.c -ldb >/dev/null 2>&1; then
++    if $CC REPLACE_HEADERS -o $TMPDIR/dbtest $TMPDIR/dbtest.c -ldb >/dev/null 2>&1; then
  	echo "HAVE_BERKELEY_DB:=y" >>$CONFIG
+ 	echo "yes"
+     else
