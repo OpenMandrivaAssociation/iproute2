@@ -189,7 +189,7 @@ install -m755 examples/cbqinit.eth1 ${DESTDIR}/${SBINDIR}/cbq
 %{_mandir}/man3/*
 
 %files doc
-%doc README README.iproute2+tc README.decnet
+%doc README README.iproute2+tc
 %if %{build_doc}
 %doc doc/*.dvi doc/*.ps
 %endif
