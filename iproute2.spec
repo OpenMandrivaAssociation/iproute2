@@ -1,10 +1,11 @@
 %define build_doc 0
 %define cbq_version v0.7.3
 %define staticdevelname %mklibname %{name} -d -s
+%global optflags %{optflags} -Oz
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	5.3.0
+Version:	5.4.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
