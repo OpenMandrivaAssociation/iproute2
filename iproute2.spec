@@ -1,5 +1,4 @@
 %define build_doc 0
-%define cbq_version v0.7.3
 %define staticdevelname %mklibname %{name} -d -s
 %global optflags %{optflags} -Oz
 
@@ -188,8 +187,7 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %{_mandir}/man3/*
 
 %files doc
-%doc README README.iproute2+tc
+%doc README
 %if %{build_doc}
 %doc doc/*.dvi doc/*.ps
 %endif
-%doc %{_docdir}/%{name}-%{version}/examples
