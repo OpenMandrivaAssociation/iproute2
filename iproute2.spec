@@ -15,6 +15,7 @@ Source1:	cbq-0000.example
 Source2:	avpkt
 #Patch0:		iproute2-3.19.0-docs.patch
 
+Patch1:		0001-devlink-allow-full-range-of-resource-sizes.patch
 # MDK patches
 
 Patch100:	iproute2-3.2.0-def-echo.patch
@@ -144,8 +145,6 @@ install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/cbq
 install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 
-install -m755 examples/cbqinit.eth1 ${DESTDIR}/${SBINDIR}/cbq
-
 %files
 %dir %{_sysconfdir}/iproute2
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/iproute2/*
@@ -181,7 +180,6 @@ install -m755 examples/cbqinit.eth1 ${DESTDIR}/${SBINDIR}/cbq
 %{_mandir}/man8/tc*
 /%{_lib}/tc
 /sbin/tc
-/sbin/cbq
 
 %files -n %{staticdevelname}
 %{_includedir}/*.h

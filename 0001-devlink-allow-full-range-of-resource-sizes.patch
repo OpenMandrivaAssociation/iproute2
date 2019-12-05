@@ -1,0 +1,43 @@
+From b9cee97db2169bd9627c5a7117e57c0892e8f552 Mon Sep 17 00:00:00 2001
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
+Date: Tue, 5 Nov 2019 13:17:07 -0800
+Subject: [PATCH] devlink: allow full range of resource sizes
+
+Resource size is a 64 bit attribute at netlink level.
+Make the command line argument 64 bit as well.
+
+Fixes: 8cd644095842 ("devlink: Add support for devlink resource abstraction")
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: David Ahern <dsahern@gmail.com>
+(cherry picked from commit c3f69bf923dea50e48564fd520fec6314ddbcf5f)
+Signed-off-by: Phil Sutter <psutter@redhat.com>
+---
+ devlink/devlink.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index 056ac95ee726f..ebffa8c80ffef 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -281,7 +281,7 @@ struct dl_opts {
+ 	bool dpipe_counters_enable;
+ 	bool eswitch_encap_mode;
+ 	const char *resource_path;
+-	uint32_t resource_size;
++	uint64_t resource_size;
+ 	uint32_t resource_id;
+ 	bool resource_id_valid;
+ 	const char *param_name;
+@@ -1334,7 +1334,7 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
+ 		} else if (dl_argv_match(dl, "size") &&
+ 			   (o_all & DL_OPT_RESOURCE_SIZE)) {
+ 			dl_arg_inc(dl);
+-			err = dl_argv_uint32_t(dl, &opts->resource_size);
++			err = dl_argv_uint64_t(dl, &opts->resource_size);
+ 			if (err)
+ 				return err;
+ 			o_found |= DL_OPT_RESOURCE_SIZE;
+-- 
+2.24.0
+
