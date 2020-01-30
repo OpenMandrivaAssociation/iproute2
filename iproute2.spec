@@ -13,8 +13,6 @@ Source0:	http://kernel.org/pub/linux/utils/net/iproute2/iproute2-%{version}.tar.
 Source1:	cbq-0000.example
 Source2:	avpkt
 #Patch0:		iproute2-3.19.0-docs.patch
-
-Patch1:		0001-devlink-allow-full-range-of-resource-sizes.patch
 # MDK patches
 
 Patch100:	iproute2-3.2.0-def-echo.patch
