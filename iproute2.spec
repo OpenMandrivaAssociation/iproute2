@@ -4,7 +4,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	5.6.0
+Version:	5.7.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -97,8 +97,7 @@ export LATEST_BDB_INCLUDE_DIR=$(ls -1d /usr/include/db[0-9]* |tail -n1)
 # Use /run instead of /var/run.
 sed -i \
 	-e 's:/var/run:/run:g' \
-	include/namespace.h \
-	man/man8/ip-netns.8
+	include/namespace.h
 
 # build against system headers
 rm -r include/netinet #include/linux include/ip{,6}tables{,_common}.h include/libiptc
@@ -173,6 +172,7 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %dir %{_sysconfdir}/sysconfig/cbq
 %config(noreplace) %{_sysconfdir}/sysconfig/cbq/*
 %{_datadir}/bash-completion/completions/tc
+%{_datadir}/bash-completion/completions/devlink
 %{_mandir}/man7/tc-*
 %{_mandir}/man8/tc*
 /%{_lib}/tc
