@@ -146,6 +146,7 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/iproute2/*
 /sbin/bridge
 /sbin/ctstat
+/sbin/dcb
 /sbin/genl
 /sbin/ifcfg
 /sbin/ifstat
