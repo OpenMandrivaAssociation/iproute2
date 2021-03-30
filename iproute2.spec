@@ -4,7 +4,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	5.10.0
+Version:	5.11.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -146,6 +146,7 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/iproute2/*
 /sbin/bridge
 /sbin/ctstat
+/sbin/dcb
 /sbin/genl
 /sbin/ifcfg
 /sbin/ifstat
