@@ -164,6 +164,7 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 /sbin/ss
 /sbin/devlink
 /sbin/tipc
+/sbin/vdpa
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 %exclude %{_mandir}/man7/tc-*
