@@ -4,7 +4,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	5.13.0
+Version:	5.14.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -38,6 +38,9 @@ BuildRequires:	texlive-ec
 BuildRequires:	texlive-url
 %endif
 Suggests:	iputils
+# For compatibility with some other distros - a few 3rd party
+# binaries (e.g. tailscale) put this as dependency
+%rename iproute
 
 %description
 The iproute package contains networking utilities (ip, tc and rtmon, for
