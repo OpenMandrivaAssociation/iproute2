@@ -4,7 +4,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	5.14.0
+Version:	5.15.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -168,8 +168,8 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 /sbin/devlink
 /sbin/tipc
 /sbin/vdpa
-%{_mandir}/man7/*
-%{_mandir}/man8/*
+%doc %{_mandir}/man7/*
+%doc %{_mandir}/man8/*
 %exclude %{_mandir}/man7/tc-*
 %exclude %{_mandir}/man8/tc*
 
@@ -178,8 +178,8 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %config(noreplace) %{_sysconfdir}/sysconfig/cbq/*
 %{_datadir}/bash-completion/completions/tc
 %{_datadir}/bash-completion/completions/devlink
-%{_mandir}/man7/tc-*
-%{_mandir}/man8/tc*
+%doc %{_mandir}/man7/tc-*
+%doc %{_mandir}/man8/tc*
 /%{_lib}/tc
 /sbin/tc
 
