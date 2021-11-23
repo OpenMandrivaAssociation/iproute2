@@ -5,7 +5,7 @@
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	5.15.0
-Release:	1
+Release:	2
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -29,6 +29,7 @@ BuildRequires:	linux-atm-devel
 BuildRequires:	pkgconfig(libnl-3.0)
 BuildRequires:	pkgconfig(xtables)
 BuildRequires:	pkgconfig(libmnl)
+BuildRequires:	pkgconfig(libbpf)
 # (oe) note: building the docs pulls in thousands of texlive packages.
 %if %{build_doc}
 BuildRequires:	linuxdoc-tools
@@ -87,7 +88,7 @@ sed -i "s/_VERSION_/%{version}/" man/man8/ss.8
 %build
 %serverbuild
 %set_build_flags
-export
+
 export RPM_OPT_FLAGS="%{optflags} -fno-strict-aliasing"
 export CCOPTS="%{optflags} -ggdb -fno-strict-aliasing -D_GNU_SOURCE -Wstrict-prototypes -fPIC"
 export SBINDIR=/sbin
@@ -187,7 +188,7 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %{_includedir}/*.h
 %{_includedir}/%{name}/bpf_elf.h
 /%{_lib}/*.a
-%{_mandir}/man3/*
+%doc %{_mandir}/man3/*
 
 %files doc
 %doc README
