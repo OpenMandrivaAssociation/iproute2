@@ -4,8 +4,8 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	5.15.0
-Release:	2
+Version:	5.16.0
+Release:	1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -16,7 +16,6 @@ Source2:	avpkt
 # MDK patches
 
 Patch100:	iproute2-3.2.0-def-echo.patch
-Patch102:	iproute2-2.4.7-bashfix.patch
 Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
 Patch111:	fix-bdb-detection.patch
 
@@ -130,7 +129,8 @@ export MANDIR='%{_mandir}'
 export LIBDIR='/%{_lib}'
 export CONFDIR='%{_sysconfdir}/iproute2'
 export DOCDIR='%{_docdir}/%{name}-%{version}'
-make install DESTDIR="%{buildroot}"
+mkdir -p %{buildroot}/%{_lib}
+make install DESTDIR="%{buildroot}" LIBDIR="/%{_lib}"
 
 mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
 
@@ -152,18 +152,15 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 /sbin/ctstat
 /sbin/dcb
 /sbin/genl
-/sbin/ifcfg
 /sbin/ifstat
 /sbin/ip
 /sbin/iproute-arpd
 /sbin/lnstat
 /sbin/nstat
 /sbin/rdma
-/sbin/routef
 /sbin/routel
 /sbin/rtacct
 /sbin/rtmon
-/sbin/rtpr
 /sbin/rtstat
 /sbin/ss
 /sbin/devlink
