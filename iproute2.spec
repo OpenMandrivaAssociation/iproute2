@@ -4,7 +4,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	5.16.0
+Version:	5.17.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -85,7 +85,6 @@ Linux.
 sed -i "s/_VERSION_/%{version}/" man/man8/ss.8
 
 %build
-%serverbuild
 %set_build_flags
 
 export RPM_OPT_FLAGS="%{optflags} -fno-strict-aliasing"
