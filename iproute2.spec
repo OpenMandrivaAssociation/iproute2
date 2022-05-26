@@ -5,7 +5,7 @@
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	5.17.0
-Release:	1
+Release:	2
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -89,24 +89,21 @@ sed -i "s/_VERSION_/%{version}/" man/man8/ss.8
 
 export RPM_OPT_FLAGS="%{optflags} -fno-strict-aliasing"
 export CCOPTS="%{optflags} -ggdb -fno-strict-aliasing -D_GNU_SOURCE -Wstrict-prototypes -fPIC"
-export SBINDIR=/sbin
-export LIBDIR=/%{_lib}
+export SBINDIR=%{_sbindir}
+export LIBDIR=%{_libdir}
 export ARPDIR=/var/lib
 export INCLUDEDIR=%{_includedir}
-export IPT_LIB_DIR=/%{_lib}/iptables
+export IPT_LIB_DIR=%{_libdir}/iptables
 export LATEST_BDB_INCLUDE_DIR=$(ls -1d /usr/include/db[0-9]* |tail -n1)
 
 # Use /run instead of /var/run.
-sed -i \
-	-e 's:/var/run:/run:g' \
-	include/namespace.h
+sed -i -e 's:/var/run:/run:g' include/namespace.h
 
 # build against system headers
 rm -r include/netinet #include/linux include/ip{,6}tables{,_common}.h include/libiptc
 sed -i 's:TCPI_OPT_ECN_SEEN:16:' misc/ss.c
 
 sed -i -e '/^CC :=/d' -e "/^HOSTCC/s:=.*:= %{__cc}:" -e "/^WFLAGS/s:-Werror::" -e "/^DBM_INCLUDE/s:=.*:=$LATEST_BDB_INCLUDE_DIR:" Makefile
-sed -i -e 's,#define IPT_LIB_DIR.*,#define IPT_LIB_DIR "/%{_lib}/iptables",' include/iptables.h
 sed -i "s!REPLACE_HEADERS!-I$LATEST_BDB_INCLUDE_DIR!g" configure
 
 # (tpg) don't use macro here
@@ -114,7 +111,7 @@ sed -i "s!REPLACE_HEADERS!-I$LATEST_BDB_INCLUDE_DIR!g" configure
 echo "CFLAGS += %{optflags} -fno-strict-aliasing -Wno-error -I$LATEST_BDB_INCLUDE_DIR" >>Config
 echo "HAVE_SETNS:=y" >>Config
 
-%make_build KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=/%{_lib} DBM_INCLUDE=$LATEST_BDB_INCLUDE_DIR
+%make_build KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=%{_libdir} DBM_INCLUDE=$LATEST_BDB_INCLUDE_DIR
 
 # Doc generation fails with -j24 (ecrm1000 used before generation)
 %if %{build_doc}
@@ -123,19 +120,18 @@ make -C doc
 
 %install
 export DESTDIR='%{buildroot}'
-export SBINDIR='/sbin/'
+export SBINDIR='%{_sbindir}'
 export MANDIR='%{_mandir}'
-export LIBDIR='/%{_lib}'
+export LIBDIR='%{_libdir}'
 export CONFDIR='%{_sysconfdir}/iproute2'
 export DOCDIR='%{_docdir}/%{name}-%{version}'
-mkdir -p %{buildroot}/%{_lib}
-make install DESTDIR="%{buildroot}" LIBDIR="/%{_lib}"
+make install DESTDIR="%{buildroot}" LIBDIR="%{_libdir}"
 
-mv %{buildroot}/sbin/arpd %{buildroot}/sbin/iproute-arpd
+mv %{buildroot}%{_sbindir}/arpd %{buildroot}%{_sbindir}/iproute-arpd
 
 # development files
 install -d %{buildroot}%{_includedir}
-install -m0644 lib/libnetlink.a %{buildroot}/%{_lib}/
+install -m0644 lib/libnetlink.a %{buildroot}%{_libdir}/
 install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 
 # Config files
@@ -147,24 +143,24 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %files
 %dir %{_sysconfdir}/iproute2
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/iproute2/*
-/sbin/bridge
-/sbin/ctstat
-/sbin/dcb
-/sbin/genl
-/sbin/ifstat
-/sbin/ip
-/sbin/iproute-arpd
-/sbin/lnstat
-/sbin/nstat
-/sbin/rdma
-/sbin/routel
-/sbin/rtacct
-/sbin/rtmon
-/sbin/rtstat
-/sbin/ss
-/sbin/devlink
-/sbin/tipc
-/sbin/vdpa
+%{_sbindir}/bridge
+%{_sbindir}/ctstat
+%{_sbindir}/dcb
+%{_sbindir}/genl
+%{_sbindir}/ifstat
+%{_sbindir}/ip
+%{_sbindir}/iproute-arpd
+%{_sbindir}/lnstat
+%{_sbindir}/nstat
+%{_sbindir}/rdma
+%{_sbindir}/routel
+%{_sbindir}/rtacct
+%{_sbindir}/rtmon
+%{_sbindir}/rtstat
+%{_sbindir}/ss
+%{_sbindir}/devlink
+%{_sbindir}/tipc
+%{_sbindir}/vdpa
 %doc %{_mandir}/man7/*
 %doc %{_mandir}/man8/*
 %exclude %{_mandir}/man7/tc-*
@@ -177,13 +173,13 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %{_datadir}/bash-completion/completions/devlink
 %doc %{_mandir}/man7/tc-*
 %doc %{_mandir}/man8/tc*
-/%{_lib}/tc
-/sbin/tc
+%{_libdir}/tc
+%{_sbindir}/tc
 
 %files -n %{staticdevelname}
 %{_includedir}/*.h
 %{_includedir}/%{name}/bpf_elf.h
-/%{_lib}/*.a
+%{_libdir}/*.a
 %doc %{_mandir}/man3/*
 
 %files doc
