@@ -5,7 +5,7 @@
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
 Version:	5.18.0
-Release:	1
+Release:	2
 License:	GPLv2+
 Group:		Networking/Other
 Url:		http://www.linuxfoundation.org/en/Net:Iproute2
@@ -120,14 +120,14 @@ make -C doc
 
 %install
 export DESTDIR='%{buildroot}'
-export SBINDIR='%{_sbindir}'
+export SBINDIR='%{_bindir}'
 export MANDIR='%{_mandir}'
 export LIBDIR='%{_libdir}'
 export CONFDIR='%{_sysconfdir}/iproute2'
 export DOCDIR='%{_docdir}/%{name}-%{version}'
 make install DESTDIR="%{buildroot}" LIBDIR="%{_libdir}"
 
-mv %{buildroot}%{_sbindir}/arpd %{buildroot}%{_sbindir}/iproute-arpd
+mv %{buildroot}%{_bindir}/arpd %{buildroot}%{_bindir}/iproute-arpd
 
 # development files
 install -d %{buildroot}%{_includedir}
@@ -143,24 +143,24 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %files
 %dir %{_sysconfdir}/iproute2
 %attr(644,root,root) %config(noreplace) %{_sysconfdir}/iproute2/*
-%{_sbindir}/bridge
-%{_sbindir}/ctstat
-%{_sbindir}/dcb
-%{_sbindir}/genl
-%{_sbindir}/ifstat
-%{_sbindir}/ip
-%{_sbindir}/iproute-arpd
-%{_sbindir}/lnstat
-%{_sbindir}/nstat
-%{_sbindir}/rdma
-%{_sbindir}/routel
-%{_sbindir}/rtacct
-%{_sbindir}/rtmon
-%{_sbindir}/rtstat
-%{_sbindir}/ss
-%{_sbindir}/devlink
-%{_sbindir}/tipc
-%{_sbindir}/vdpa
+%{_bindir}/bridge
+%{_bindir}/ctstat
+%{_bindir}/dcb
+%{_bindir}/genl
+%{_bindir}/ifstat
+%{_bindir}/ip
+%{_bindir}/iproute-arpd
+%{_bindir}/lnstat
+%{_bindir}/nstat
+%{_bindir}/rdma
+%{_bindir}/routel
+%{_bindir}/rtacct
+%{_bindir}/rtmon
+%{_bindir}/rtstat
+%{_bindir}/ss
+%{_bindir}/devlink
+%{_bindir}/tipc
+%{_bindir}/vdpa
 %doc %{_mandir}/man7/*
 %doc %{_mandir}/man8/*
 %exclude %{_mandir}/man7/tc-*
@@ -174,7 +174,7 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %doc %{_mandir}/man7/tc-*
 %doc %{_mandir}/man8/tc*
 %{_libdir}/tc
-%{_sbindir}/tc
+%{_bindir}/tc
 
 %files -n %{staticdevelname}
 %{_includedir}/*.h
