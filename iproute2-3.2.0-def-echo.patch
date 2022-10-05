@@ -1,7 +1,7 @@
-diff -Nurp iproute2-3.2.0.orig/lib/ll_proto.c iproute2-3.2.0/lib/ll_proto.c
---- iproute2-3.2.0.orig/lib/ll_proto.c	2012-01-05 18:34:31.000000000 +0200
-+++ iproute2-3.2.0/lib/ll_proto.c	2012-01-06 17:20:34.286187750 +0200
-@@ -28,6 +28,10 @@
+diff -up iproute2-6.0.0/lib/ll_proto.c.1~ iproute2-6.0.0/lib/ll_proto.c
+--- iproute2-6.0.0/lib/ll_proto.c.1~	2022-10-05 18:37:01.522724232 +0200
++++ iproute2-6.0.0/lib/ll_proto.c	2022-10-05 18:37:26.915913258 +0200
+@@ -26,6 +26,10 @@
  #include "utils.h"
  #include "rt_names.h"
  
@@ -11,4 +11,4 @@ diff -Nurp iproute2-3.2.0.orig/lib/ll_proto.c iproute2-3.2.0/lib/ll_proto.c
 +#endif
  
  #define __PF(f,n) { ETH_P_##f, #n },
- static const struct {
+ 
