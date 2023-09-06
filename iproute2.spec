@@ -4,7 +4,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	6.4.0
+Version:	6.5.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -135,14 +135,14 @@ install -m0644 lib/libnetlink.a %{buildroot}%{_libdir}/
 install -m0644 include/libnetlink.h %{buildroot}%{_includedir}/
 
 # Config files
-#install -m644 etc/iproute2/* %{buildroot}%{_sysconfdir}/iproute2
+mkdir -p %{buildroot}%{_sysconfdir}/iproute2
 
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig/cbq
 install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 
 %files
 %dir %{_sysconfdir}/iproute2
-%attr(644,root,root) %config(noreplace) %{_sysconfdir}/iproute2/*
+%{_prefix}/lib/iproute2
 %{_bindir}/bridge
 %{_bindir}/ctstat
 %{_bindir}/dcb
