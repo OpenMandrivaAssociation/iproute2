@@ -1,10 +1,12 @@
 %define build_doc 0
 %define staticdevelname %mklibname %{name} -d -s
 %global optflags %{optflags} -Oz
+# For plugins
+%define _disable_ld_no_undefined 1
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	6.5.0
+Version:	6.6.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -16,7 +18,7 @@ Source2:	avpkt
 # MDK patches
 
 Patch100:	iproute2-3.2.0-def-echo.patch
-Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
+#Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
 Patch111:	fix-bdb-detection.patch
 
 BuildRequires:	bison
@@ -142,7 +144,7 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 
 %files
 %dir %{_sysconfdir}/iproute2
-%{_prefix}/lib/iproute2
+%{_libdir}/iproute2
 %{_bindir}/bridge
 %{_bindir}/ctstat
 %{_bindir}/dcb
