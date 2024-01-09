@@ -6,7 +6,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	6.6.0
+Version:	6.7.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
@@ -144,7 +144,6 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 
 %files
 %dir %{_sysconfdir}/iproute2
-%{_libdir}/iproute2
 %{_bindir}/bridge
 %{_bindir}/ctstat
 %{_bindir}/dcb
@@ -163,6 +162,7 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %{_bindir}/devlink
 %{_bindir}/tipc
 %{_bindir}/vdpa
+%{_datadir}/iproute2
 %doc %{_mandir}/man7/*
 %doc %{_mandir}/man8/*
 %exclude %{_mandir}/man7/tc-*
