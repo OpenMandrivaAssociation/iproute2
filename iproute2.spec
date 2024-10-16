@@ -10,7 +10,7 @@ Version:	6.11.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
-Url:		http://www.linuxfoundation.org/en/Net:Iproute2
+Url:		https://www.linuxfoundation.org/en/Net:Iproute2
 Source0:	http://kernel.org/pub/linux/utils/net/iproute2/iproute2-%{version}.tar.xz
 Source1:	cbq-0000.example
 Source2:	avpkt
