@@ -6,12 +6,12 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	6.15.0
+Version:	6.16.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
 Url:		https://www.linuxfoundation.org/en/Net:Iproute2
-Source0:	http://kernel.org/pub/linux/utils/net/iproute2/iproute2-%{version}.tar.xz
+Source0:	https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/snapshot/iproute2-%{version}.tar.gz
 Source1:	cbq-0000.example
 Source2:	avpkt
 #Patch0:		iproute2-3.19.0-docs.patch
