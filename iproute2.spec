@@ -6,7 +6,7 @@
 
 Summary:	Advanced IP routing and network device configuration tools
 Name:		iproute2
-Version:	6.16.0
+Version:	6.17.0
 Release:	1
 License:	GPLv2+
 Group:		Networking/Other
