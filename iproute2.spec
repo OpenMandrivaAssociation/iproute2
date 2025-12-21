@@ -21,6 +21,11 @@ Patch100:	iproute2-3.2.0-def-echo.patch
 #Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
 Patch111:	fix-bdb-detection.patch
 
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	iptables
