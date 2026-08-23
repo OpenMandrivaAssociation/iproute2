@@ -1,6 +1,6 @@
 diff -Naur a/configure b/configure
 --- a/configure	2026-08-23 17:28:06.654521548 +0200
-+++ b/configure	2026-08-23 17:28:06.887569729 +0200
++++ b/configure	2026-08-23 17:47:27.440251961 +0200
 @@ -401,24 +401,24 @@
  	fi
  }
@@ -50,7 +50,7 @@ diff -Naur a/configure b/configure
  check_strlcpy
 diff -Naur a/misc/Makefile b/misc/Makefile
 --- a/misc/Makefile	2026-08-23 17:28:06.769582985 +0200
-+++ b/misc/Makefile	2026-08-23 17:28:14.583694472 +0200
++++ b/misc/Makefile	2026-08-23 17:47:27.440362103 +0200
 @@ -6,7 +6,7 @@
  
  include ../config.mk
@@ -71,7 +71,7 @@ diff -Naur a/misc/Makefile b/misc/Makefile
  	$(QUIET_YACC)$(YACC) -b ssfilter ssfilter.y
 diff -Naur a/misc/arpd.c b/misc/arpd.c
 --- a/misc/arpd.c	2026-08-23 17:28:06.651192297 +0200
-+++ b/misc/arpd.c	2026-08-23 17:28:06.887821742 +0200
++++ b/misc/arpd.c	2026-08-23 17:47:27.474824709 +0200
 @@ -12,7 +12,7 @@
  #include <unistd.h>
  #include <stdlib.h>
@@ -93,7 +93,7 @@ diff -Naur a/misc/arpd.c b/misc/arpd.c
  	__u32	addr;
  };
  
-+static MDB_env *env;
++static MDB_env *mdb_env;
 +static MDB_dbi dbi;
 +
 +#define ARPD_MAPSIZE	(16UL * 1024 * 1024)
@@ -106,40 +106,40 @@ diff -Naur a/misc/arpd.c b/misc/arpd.c
 +	int rc;
 +	MDB_txn *txn;
 +
-+	rc = mdb_env_create(&env);
++	rc = mdb_env_create(&mdb_env);
 +	if (rc) {
 +		fprintf(stderr, "mdb_env_create: %s\n", mdb_strerror(rc));
 +		return -1;
 +	}
-+	mdb_env_set_mapsize(env, ARPD_MAPSIZE);
++	mdb_env_set_mapsize(mdb_env, ARPD_MAPSIZE);
 +	/* Keep -b as a single file, matching the historic arpd.db path. */
-+	rc = mdb_env_open(env, path, MDB_NOSUBDIR, 0644);
++	rc = mdb_env_open(mdb_env, path, MDB_NOSUBDIR, 0644);
 +	if (rc) {
 +		fprintf(stderr, "mdb_env_open: %s\n", mdb_strerror(rc));
-+		mdb_env_close(env);
-+		env = NULL;
++		mdb_env_close(mdb_env);
++		mdb_env = NULL;
 +		return -1;
 +	}
-+	rc = mdb_txn_begin(env, NULL, 0, &txn);
++	rc = mdb_txn_begin(mdb_env, NULL, 0, &txn);
 +	if (rc) {
 +		fprintf(stderr, "mdb_txn_begin: %s\n", mdb_strerror(rc));
-+		mdb_env_close(env);
-+		env = NULL;
++		mdb_env_close(mdb_env);
++		mdb_env = NULL;
 +		return -1;
 +	}
 +	rc = mdb_dbi_open(txn, NULL, MDB_CREATE, &dbi);
 +	if (rc) {
 +		fprintf(stderr, "mdb_dbi_open: %s\n", mdb_strerror(rc));
 +		mdb_txn_abort(txn);
-+		mdb_env_close(env);
-+		env = NULL;
++		mdb_env_close(mdb_env);
++		mdb_env = NULL;
 +		return -1;
 +	}
 +	rc = mdb_txn_commit(txn);
 +	if (rc) {
 +		fprintf(stderr, "mdb_txn_commit: %s\n", mdb_strerror(rc));
-+		mdb_env_close(env);
-+		env = NULL;
++		mdb_env_close(mdb_env);
++		mdb_env = NULL;
 +		return -1;
 +	}
 +	return 0;
@@ -147,10 +147,10 @@ diff -Naur a/misc/arpd.c b/misc/arpd.c
 +
 +static void arpd_db_close(void)
 +{
-+	if (!env)
++	if (!mdb_env)
 +		return;
-+	mdb_env_close(env);
-+	env = NULL;
++	mdb_env_close(mdb_env);
++	mdb_env = NULL;
 +}
 +
 +static int arpd_db_get(struct dbkey *key, void **data, size_t *size)
@@ -160,7 +160,7 @@ diff -Naur a/misc/arpd.c b/misc/arpd.c
 +	MDB_val v;
 +	int rc;
 +
-+	if (mdb_txn_begin(env, NULL, MDB_RDONLY, &txn))
++	if (mdb_txn_begin(mdb_env, NULL, MDB_RDONLY, &txn))
 +		return -1;
 +	rc = mdb_get(txn, dbi, &k, &v);
 +	if (rc == 0) {
@@ -186,7 +186,7 @@ diff -Naur a/misc/arpd.c b/misc/arpd.c
 +	MDB_val v = { .mv_size = size, .mv_data = data };
 +	int rc;
 +
-+	if (mdb_txn_begin(env, NULL, 0, &txn))
++	if (mdb_txn_begin(mdb_env, NULL, 0, &txn))
 +		return -1;
 +	rc = mdb_put(txn, dbi, &k, &v, 0);
 +	if (rc) {
@@ -202,7 +202,7 @@ diff -Naur a/misc/arpd.c b/misc/arpd.c
 +	MDB_val k = { .mv_size = sizeof(*key), .mv_data = key };
 +	int rc;
 +
-+	if (mdb_txn_begin(env, NULL, 0, &txn))
++	if (mdb_txn_begin(mdb_env, NULL, 0, &txn))
 +		return -1;
 +	rc = mdb_del(txn, dbi, &k, NULL);
 +	if (rc && rc != MDB_NOTFOUND) {
@@ -214,8 +214,8 @@ diff -Naur a/misc/arpd.c b/misc/arpd.c
 +
 +static void arpd_db_sync(void)
 +{
-+	if (env)
-+		mdb_env_sync(env, 1);
++	if (mdb_env)
++		mdb_env_sync(mdb_env, 1);
 +}
 +
  #define IS_NEG(x)	(((__u8 *)(x))[0] == 0xFF)
@@ -423,7 +423,7 @@ diff -Naur a/misc/arpd.c b/misc/arpd.c
 -
 -			if (handle_if(key->iface)) {
 -				if (!IS_NEG(dbdat.data)) {
-+		if (mdb_txn_begin(env, NULL, MDB_RDONLY, &txn) == 0 &&
++		if (mdb_txn_begin(mdb_env, NULL, MDB_RDONLY, &txn) == 0 &&
 +		    mdb_cursor_open(txn, dbi, &cur) == 0) {
 +			while (mdb_cursor_get(cur, &mk, &mv, MDB_NEXT) == 0) {
 +				struct dbkey *key;
