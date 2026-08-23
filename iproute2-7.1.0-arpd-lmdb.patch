@@ -1,0 +1,478 @@
+diff -Naur a/configure b/configure
+--- a/configure	2026-08-23 17:28:06.654521548 +0200
++++ b/configure	2026-08-23 17:28:06.887569729 +0200
+@@ -401,24 +401,24 @@
+ 	fi
+ }
+ 
+-check_berkeley_db()
++check_lmdb()
+ {
+-    cat >$TMPDIR/dbtest.c <<EOF
+-#include <fcntl.h>
+-#include <stdlib.h>
+-#include <db_185.h>
+-int main(int argc, char **argv) {
+-	dbopen("/tmp/xxx_test_db.db", O_CREAT|O_RDWR, 0644, DB_HASH, NULL);
+-	return 0;
++    cat >$TMPDIR/lmdbtest.c <<EOF
++#include <lmdb.h>
++int main(void) {
++	MDB_env *env;
++	return mdb_env_create(&env) != 0;
+ }
+ EOF
+-    if $CC -I$INCLUDE -o $TMPDIR/dbtest $TMPDIR/dbtest.c -ldb >/dev/null 2>&1; then
+-	echo "HAVE_BERKELEY_DB:=y" >>$CONFIG
++    if ${PKG_CONFIG} lmdb --exists &&        $CC -I$INCLUDE -o $TMPDIR/lmdbtest $TMPDIR/lmdbtest.c $(${PKG_CONFIG} lmdb --cflags --libs) >/dev/null 2>&1; then
++	echo "HAVE_LMDB:=y" >>$CONFIG
++	echo 'CFLAGS +=' "$(${PKG_CONFIG} lmdb --cflags)" >>$CONFIG
++	echo 'LDLIBS +=' "$(${PKG_CONFIG} lmdb --libs)" >>$CONFIG
+ 	echo "yes"
+     else
+ 	echo "no"
+     fi
+-    rm -f $TMPDIR/dbtest.c $TMPDIR/dbtest
++    rm -f $TMPDIR/lmdbtest.c $TMPDIR/lmdbtest
+ }
+ 
+ check_strlcpy()
+@@ -631,8 +631,8 @@
+ echo -n "libmnl support: "
+ check_mnl
+ 
+-echo -n "Berkeley DB: "
+-check_berkeley_db
++echo -n "LMDB: "
++check_lmdb
+ 
+ echo -n "need for strlcpy: "
+ check_strlcpy
+diff -Naur a/misc/Makefile b/misc/Makefile
+--- a/misc/Makefile	2026-08-23 17:28:06.769582985 +0200
++++ b/misc/Makefile	2026-08-23 17:28:14.583694472 +0200
+@@ -6,7 +6,7 @@
+ 
+ include ../config.mk
+ 
+-ifeq ($(HAVE_BERKELEY_DB),y)
++ifeq ($(HAVE_LMDB),y)
+ 	TARGETS += arpd
+ endif
+ 
+@@ -25,7 +25,7 @@
+ 	$(QUIET_CC)$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o rtacct rtacct.c $(LDLIBS) -lm
+ 
+ arpd: arpd.c
+-	$(QUIET_CC)$(CC) $(CFLAGS) -I$(DBM_INCLUDE) $(CPPFLAGS) $(LDFLAGS) -o arpd arpd.c $(LDLIBS) -ldb
++	$(QUIET_CC)$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -o arpd arpd.c $(LDLIBS)
+ 
+ ssfilter.tab.c: ssfilter.y
+ 	$(QUIET_YACC)$(YACC) -b ssfilter ssfilter.y
+diff -Naur a/misc/arpd.c b/misc/arpd.c
+--- a/misc/arpd.c	2026-08-23 17:28:06.651192297 +0200
++++ b/misc/arpd.c	2026-08-23 17:28:06.887821742 +0200
+@@ -12,7 +12,7 @@
+ #include <unistd.h>
+ #include <stdlib.h>
+ #include <netdb.h>
+-#include <db_185.h>
++#include <lmdb.h>
+ #include <sys/ioctl.h>
+ #include <poll.h>
+ #include <errno.h>
+@@ -35,7 +35,6 @@
+ #include "utils.h"
+ #include "rt_names.h"
+ 
+-DB	*dbase;
+ char const	default_dbname[] = ARPDDIR "/arpd.db";
+ char const	*dbname = default_dbname;
+ 
+@@ -48,6 +47,131 @@
+ 	__u32	addr;
+ };
+ 
++static MDB_env *env;
++static MDB_dbi dbi;
++
++#define ARPD_MAPSIZE	(16UL * 1024 * 1024)
++#define ARPD_VAL_MAX	32
++
++static unsigned char last_val[ARPD_VAL_MAX];
++
++static int arpd_db_open(const char *path)
++{
++	int rc;
++	MDB_txn *txn;
++
++	rc = mdb_env_create(&env);
++	if (rc) {
++		fprintf(stderr, "mdb_env_create: %s\n", mdb_strerror(rc));
++		return -1;
++	}
++	mdb_env_set_mapsize(env, ARPD_MAPSIZE);
++	/* Keep -b as a single file, matching the historic arpd.db path. */
++	rc = mdb_env_open(env, path, MDB_NOSUBDIR, 0644);
++	if (rc) {
++		fprintf(stderr, "mdb_env_open: %s\n", mdb_strerror(rc));
++		mdb_env_close(env);
++		env = NULL;
++		return -1;
++	}
++	rc = mdb_txn_begin(env, NULL, 0, &txn);
++	if (rc) {
++		fprintf(stderr, "mdb_txn_begin: %s\n", mdb_strerror(rc));
++		mdb_env_close(env);
++		env = NULL;
++		return -1;
++	}
++	rc = mdb_dbi_open(txn, NULL, MDB_CREATE, &dbi);
++	if (rc) {
++		fprintf(stderr, "mdb_dbi_open: %s\n", mdb_strerror(rc));
++		mdb_txn_abort(txn);
++		mdb_env_close(env);
++		env = NULL;
++		return -1;
++	}
++	rc = mdb_txn_commit(txn);
++	if (rc) {
++		fprintf(stderr, "mdb_txn_commit: %s\n", mdb_strerror(rc));
++		mdb_env_close(env);
++		env = NULL;
++		return -1;
++	}
++	return 0;
++}
++
++static void arpd_db_close(void)
++{
++	if (!env)
++		return;
++	mdb_env_close(env);
++	env = NULL;
++}
++
++static int arpd_db_get(struct dbkey *key, void **data, size_t *size)
++{
++	MDB_txn *txn;
++	MDB_val k = { .mv_size = sizeof(*key), .mv_data = key };
++	MDB_val v;
++	int rc;
++
++	if (mdb_txn_begin(env, NULL, MDB_RDONLY, &txn))
++		return -1;
++	rc = mdb_get(txn, dbi, &k, &v);
++	if (rc == 0) {
++		if (v.mv_size == 0 || v.mv_size > ARPD_VAL_MAX) {
++			mdb_txn_abort(txn);
++			return -1;
++		}
++		memcpy(last_val, v.mv_data, v.mv_size);
++		*data = last_val;
++		*size = v.mv_size;
++	} else {
++		*data = NULL;
++		*size = 0;
++	}
++	mdb_txn_abort(txn);
++	return rc == 0 ? 0 : -1;
++}
++
++static int arpd_db_put(struct dbkey *key, void *data, size_t size)
++{
++	MDB_txn *txn;
++	MDB_val k = { .mv_size = sizeof(*key), .mv_data = key };
++	MDB_val v = { .mv_size = size, .mv_data = data };
++	int rc;
++
++	if (mdb_txn_begin(env, NULL, 0, &txn))
++		return -1;
++	rc = mdb_put(txn, dbi, &k, &v, 0);
++	if (rc) {
++		mdb_txn_abort(txn);
++		return -1;
++	}
++	return mdb_txn_commit(txn) ? -1 : 0;
++}
++
++static int arpd_db_del(struct dbkey *key)
++{
++	MDB_txn *txn;
++	MDB_val k = { .mv_size = sizeof(*key), .mv_data = key };
++	int rc;
++
++	if (mdb_txn_begin(env, NULL, 0, &txn))
++		return -1;
++	rc = mdb_del(txn, dbi, &k, NULL);
++	if (rc && rc != MDB_NOTFOUND) {
++		mdb_txn_abort(txn);
++		return -1;
++	}
++	return mdb_txn_commit(txn) ? -1 : 0;
++}
++
++static void arpd_db_sync(void)
++{
++	if (env)
++		mdb_env_sync(env, 1);
++}
++
+ #define IS_NEG(x)	(((__u8 *)(x))[0] == 0xFF)
+ #define NEG_TIME(x)	(((x)[2]<<24)|((x)[3]<<16)|((x)[4]<<8)|(x)[5])
+ #define NEG_AGE(x)	((__u32)time(NULL) - NEG_TIME((__u8 *)x))
+@@ -296,11 +420,12 @@
+ 	int len = n->nlmsg_len;
+ 	struct rtattr *tb[NDA_MAX+1];
+ 	struct dbkey key;
+-	DBT dbkey, dbdat;
++	void *data;
++	size_t size;
+ 	int do_acct = 0;
+ 
+ 	if (n->nlmsg_type == NLMSG_DONE) {
+-		dbase->sync(dbase, 0);
++		arpd_db_sync();
+ 
+ 		/* Now we have at least mirror of kernel db, so that
+ 		 * may start real resolution.
+@@ -330,12 +455,10 @@
+ 
+ 	key.iface = ndm->ndm_ifindex;
+ 	memcpy(&key.addr, RTA_DATA(tb[NDA_DST]), 4);
+-	dbkey.data = &key;
+-	dbkey.size = sizeof(key);
+ 
+-	if (dbase->get(dbase, &dbkey, &dbdat, 0) != 0) {
+-		dbdat.data = 0;
+-		dbdat.size = 0;
++	if (arpd_db_get(&key, &data, &size) != 0) {
++		data = NULL;
++		size = 0;
+ 	}
+ 
+ 	if (n->nlmsg_type == RTM_GETNEIGH) {
+@@ -354,24 +477,24 @@
+ 			 * Kernel is going to initiate broadcast resolution.
+ 			 * OK, we invalidate our information as well.
+ 			 */
+-			if (dbdat.data && !IS_NEG(dbdat.data))
++			if (data && !IS_NEG(data))
+ 				stats.app_neg++;
+ 
+-			dbase->del(dbase, &dbkey, 0);
++			arpd_db_del(&key);
+ 		} else {
+ 			/* If we get this kernel does not have any information.
+ 			 * If we have something tell this to kernel. */
+ 			stats.app_recv++;
+-			if (dbdat.data && !IS_NEG(dbdat.data)) {
++			if (data && !IS_NEG(data)) {
+ 				stats.app_success++;
+-				respond_to_kernel(key.iface, key.addr, dbdat.data, dbdat.size);
++				respond_to_kernel(key.iface, key.addr, data, size);
+ 				return 0;
+ 			}
+ 
+ 			/* Sheeit! We have nothing to tell. */
+ 			/* If we have recent negative entry, be silent. */
+-			if (dbdat.data && NEG_VALID(dbdat.data)) {
+-				if (NEG_CNT(dbdat.data) >= active_probing) {
++			if (data && NEG_VALID(data)) {
++				if (NEG_CNT(data) >= active_probing) {
+ 					stats.app_suppressed++;
+ 					return 0;
+ 				}
+@@ -382,8 +505,8 @@
+ 		if (active_probing &&
+ 		    queue_active_probe(ndm->ndm_ifindex, key.addr) == 0 &&
+ 		    do_acct) {
+-			NEG_CNT(dbdat.data)++;
+-			dbase->put(dbase, &dbkey, &dbdat, 0);
++			NEG_CNT(data)++;
++			arpd_db_put(&key, data, size);
+ 		}
+ 	} else if (n->nlmsg_type == RTM_NEWNEIGH) {
+ 		if (n->nlmsg_flags&NLM_F_REQUEST)
+@@ -393,28 +516,28 @@
+ 			/* Kernel was not able to resolve. Host is dead.
+ 			 * Create negative entry if it is not present
+ 			 * or renew it if it is too old. */
+-			if (!dbdat.data ||
+-			    !IS_NEG(dbdat.data) ||
+-			    !NEG_VALID(dbdat.data)) {
++			if (!data ||
++			    !IS_NEG(data) ||
++			    !NEG_VALID(data)) {
+ 				__u8 ndata[6];
+ 
+ 				stats.kern_neg++;
+ 				prepare_neg_entry(ndata, time(NULL));
+-				dbdat.data = ndata;
+-				dbdat.size = sizeof(ndata);
+-				dbase->put(dbase, &dbkey, &dbdat, 0);
++				data = ndata;
++				size = sizeof(ndata);
++				arpd_db_put(&key, data, size);
+ 			}
+ 		} else if (tb[NDA_LLADDR]) {
+-			if (dbdat.data && !IS_NEG(dbdat.data)) {
+-				if (memcmp(RTA_DATA(tb[NDA_LLADDR]), dbdat.data, dbdat.size) == 0)
++			if (data && !IS_NEG(data)) {
++				if (memcmp(RTA_DATA(tb[NDA_LLADDR]), data, size) == 0)
+ 					return 0;
+ 				stats.kern_change++;
+ 			} else {
+ 				stats.kern_new++;
+ 			}
+-			dbdat.data = RTA_DATA(tb[NDA_LLADDR]);
+-			dbdat.size = RTA_PAYLOAD(tb[NDA_LLADDR]);
+-			dbase->put(dbase, &dbkey, &dbdat, 0);
++			data = RTA_DATA(tb[NDA_LLADDR]);
++			size = RTA_PAYLOAD(tb[NDA_LLADDR]);
++			arpd_db_put(&key, data, size);
+ 		}
+ 	}
+ 	return 0;
+@@ -480,7 +603,8 @@
+ 	socklen_t sll_len = sizeof(sll);
+ 	struct arphdr *a = (struct arphdr *)buf;
+ 	struct dbkey key;
+-	DBT dbkey, dbdat;
++	void *data;
++	size_t size;
+ 	int n;
+ 
+ 	n = recvfrom(pset[0].fd, buf, sizeof(buf), MSG_DONTWAIT,
+@@ -511,20 +635,17 @@
+ 	if (key.addr == 0)
+ 		return;
+ 
+-	dbkey.data = &key;
+-	dbkey.size = sizeof(key);
+-
+-	if (dbase->get(dbase, &dbkey, &dbdat, 0) == 0 && !IS_NEG(dbdat.data)) {
+-		if (memcmp(dbdat.data, a+1, dbdat.size) == 0)
++	if (arpd_db_get(&key, &data, &size) == 0 && !IS_NEG(data)) {
++		if (memcmp(data, a+1, size) == 0)
+ 			return;
+ 		stats.arp_change++;
+ 	} else {
+ 		stats.arp_new++;
+ 	}
+ 
+-	dbdat.data = a+1;
+-	dbdat.size = a->ar_hln;
+-	dbase->put(dbase, &dbkey, &dbdat, 0);
++	data = a+1;
++	size = a->ar_hln;
++	arpd_db_put(&key, data, size);
+ }
+ 
+ static void catch_signal(int sig, void (*handler)(int))
+@@ -676,20 +797,13 @@
+ 		}
+ 	}
+ 
+-	dbase = dbopen(dbname, O_CREAT|O_RDWR, 0644, DB_HASH, NULL);
+-	if (dbase == NULL) {
+-		perror("db_open");
++	if (arpd_db_open(dbname))
+ 		exit(-1);
+-	}
+ 
+ 	if (do_load) {
+ 		char buf[128];
+ 		FILE *fp;
+ 		struct dbkey k;
+-		DBT dbkey, dbdat;
+-
+-		dbkey.data = &k;
+-		dbkey.size = sizeof(k);
+ 
+ 		if (strcmp(do_load, "-") == 0 || strcmp(do_load, "--") == 0) {
+ 			fp = stdin;
+@@ -720,40 +834,49 @@
+ 
+ 			if (ll_addr_a2n((char *) b1, 6, macbuf) != 6)
+ 				goto do_abort;
+-			dbdat.size = 6;
+ 
+-			if (dbase->put(dbase, &dbkey, &dbdat, 0)) {
+-				perror("hash->put");
++			if (arpd_db_put(&k, b1, 6)) {
++				perror("arpd_db_put");
+ 				goto do_abort;
+ 			}
+ 		}
+-		dbase->sync(dbase, 0);
++		arpd_db_sync();
+ 		if (fp != stdin)
+ 			fclose(fp);
+ 	}
+ 
+ 	if (do_list) {
+-		DBT dbkey, dbdat;
++		MDB_txn *txn;
++		MDB_cursor *cur;
++		MDB_val mk, mv;
+ 
+ 		printf("%-8s %-15s %s\n", "#Ifindex", "IP", "MAC");
+-		while (dbase->seq(dbase, &dbkey, &dbdat, R_NEXT) == 0) {
+-			struct dbkey *key = dbkey.data;
+-
+-			if (handle_if(key->iface)) {
+-				if (!IS_NEG(dbdat.data)) {
++		if (mdb_txn_begin(env, NULL, MDB_RDONLY, &txn) == 0 &&
++		    mdb_cursor_open(txn, dbi, &cur) == 0) {
++			while (mdb_cursor_get(cur, &mk, &mv, MDB_NEXT) == 0) {
++				struct dbkey *key;
++
++				if (mk.mv_size != sizeof(*key) || mv.mv_size == 0)
++					continue;
++				key = mk.mv_data;
++				if (!handle_if(key->iface))
++					continue;
++				if (!IS_NEG(mv.mv_data)) {
+ 					char b1[18];
+ 
+ 					printf("%-8d %-15s %s\n",
+ 					       key->iface,
+ 					       inet_ntoa(*(struct in_addr *)&key->addr),
+-					       ll_addr_n2a(dbdat.data, 6, ARPHRD_ETHER, b1, 18));
++					       ll_addr_n2a(mv.mv_data, 6, ARPHRD_ETHER, b1, 18));
+ 				} else {
+ 					printf("%-8d %-15s FAILED: %dsec ago\n",
+ 					       key->iface,
+ 					       inet_ntoa(*(struct in_addr *)&key->addr),
+-					       NEG_AGE(dbdat.data));
++					       NEG_AGE(mv.mv_data));
+ 				}
+ 			}
++			mdb_cursor_close(cur);
++			mdb_txn_abort(txn);
+ 		}
+ 	}
+ 
+@@ -813,7 +936,7 @@
+ 			break;
+ 		if (do_sync) {
+ 			in_poll = 0;
+-			dbase->sync(dbase, 0);
++			arpd_db_sync();
+ 			do_sync = 0;
+ 			in_poll = 1;
+ 		}
+@@ -832,10 +955,10 @@
+ 
+ 	undo_sysctl_adjustments();
+ out:
+-	dbase->close(dbase);
++	arpd_db_close();
+ 	exit(0);
+ 
+ do_abort:
+-	dbase->close(dbase);
++	arpd_db_close();
+ 	exit(-1);
+ }

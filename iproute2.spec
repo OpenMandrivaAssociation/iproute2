@@ -19,7 +19,7 @@ Source2:	avpkt
 
 Patch100:	iproute2-3.2.0-def-echo.patch
 #Patch110:	iproute2-3.2.0-q_atm-ld-uneeded.patch
-Patch111:	fix-bdb-detection.patch
+Patch111:	iproute2-7.1.0-arpd-lmdb.patch
 
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -30,7 +30,7 @@ BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	iptables
 BuildRequires:	kernel-source
-BuildRequires:	db-devel >= 18.1
+BuildRequires:	pkgconfig(lmdb)
 BuildRequires:	linux-atm-devel
 BuildRequires:	pkgconfig(libnl-3.0)
 BuildRequires:	pkgconfig(xtables)
@@ -87,6 +87,51 @@ The Traffic Control utility manages queueing disciplines, their classes and
 attached filters and actions. It is the standard tool to configure QoS in
 Linux.
 
+%package arpd
+Summary:	Userspace ARP helper daemon
+Group:		Networking/Other
+Requires:	%{name} = %{EVRD}
+
+%description arpd
+arpd collects gratuitous ARP information and can feed it to the kernel
+to avoid redundant broadcasts when the kernel ARP cache is too small.
+The daemon is stored as iproute-arpd so it does not collide with other
+arpd implementations.
+
+%package rtmon
+Summary:	Listen to and dump kernel routing changes
+Group:		Networking/Other
+Requires:	%{name} = %{EVRD}
+
+%description rtmon
+rtmon listens to netlink route updates and writes them to a file.
+
+%package rtacct
+Summary:	Network statistics collector (nstat companion)
+Group:		Networking/Other
+Requires:	%{name} = %{EVRD}
+
+%description rtacct
+rtacct displays and collects network statistics from /proc/net/rt_acct
+and related kernel counters.
+
+%package routel
+Summary:	Format ip route output as a table
+Group:		Networking/Other
+Requires:	%{name} = %{EVRD}
+
+%description routel
+routel is a small helper that pretty-prints the routing table.
+
+%package lnstat
+Summary:	Legacy lnstat/rtstat/ctstat network statistics tools
+Group:		Networking/Other
+Requires:	%{name} = %{EVRD}
+
+%description lnstat
+lnstat and the rtstat/ctstat compatibility names are the old iproute2
+statistics tools. They are not needed to use ip, ss, tc or bridge.
+
 %prep
 %autosetup -p1
 sed -i "s/_VERSION_/%{version}/" man/man8/ss.8
@@ -101,8 +146,6 @@ export LIBDIR=%{_libdir}
 export ARPDIR=/var/lib
 export INCLUDEDIR=%{_includedir}
 export IPT_LIB_DIR=%{_libdir}/iptables
-export LATEST_BDB_INCLUDE_DIR=$(ls -1d /usr/include/db[0-9]* |tail -n1)
-
 # Use /run instead of /var/run.
 sed -i -e 's:/var/run:/run:g' include/namespace.h
 
@@ -110,15 +153,19 @@ sed -i -e 's:/var/run:/run:g' include/namespace.h
 rm -r include/netinet #include/linux include/ip{,6}tables{,_common}.h include/libiptc
 sed -i 's:TCPI_OPT_ECN_SEEN:16:' misc/ss.c
 
-sed -i -e '/^CC :=/d' -e "/^HOSTCC/s:=.*:= %{__cc}:" -e "/^WFLAGS/s:-Werror::" -e "/^DBM_INCLUDE/s:=.*:=$LATEST_BDB_INCLUDE_DIR:" Makefile
-sed -i "s!REPLACE_HEADERS!-I$LATEST_BDB_INCLUDE_DIR!g" configure
+sed -i -e '/^CC :=/d' -e "/^HOSTCC/s:=.*:= %{__cc}:" -e "/^WFLAGS/s:-Werror::" Makefile
 
 # (tpg) don't use macro here
 ./configure
-echo "CFLAGS += %{optflags} -fno-strict-aliasing -Wno-error -I$LATEST_BDB_INCLUDE_DIR" >>Config
+echo "CFLAGS += %{optflags} -fno-strict-aliasing -Wno-error" >>Config
 echo "HAVE_SETNS:=y" >>Config
 
-%make_build KERNEL_INCLUDE=/usr/src/linux/include LIBDIR=%{_libdir} DBM_INCLUDE=$LATEST_BDB_INCLUDE_DIR
+%if %{cross_compiling}
+%global iproute_kernel_include /usr/%{_target_platform}/usr/include
+%else
+%global iproute_kernel_include /usr/src/linux/include
+%endif
+%make_build KERNEL_INCLUDE=%{iproute_kernel_include} LIBDIR=%{_libdir}
 
 # Doc generation fails with -j24 (ecrm1000 used before generation)
 %if %{build_doc}
@@ -136,6 +183,11 @@ make install DESTDIR="%{buildroot}" LIBDIR="%{_libdir}"
 
 mv %{buildroot}%{_bindir}/arpd %{buildroot}%{_bindir}/iproute-arpd
 
+# LMDB MDB_NOSUBDIR uses the -b path as the data file and path-lock as the lock.
+install -d %{buildroot}%{_localstatedir}/lib/arpd
+touch %{buildroot}%{_localstatedir}/lib/arpd/arpd.db
+touch %{buildroot}%{_localstatedir}/lib/arpd/arpd.db-lock
+
 # development files
 install -d %{buildroot}%{_includedir}
 install -m0644 lib/libnetlink.a %{buildroot}%{_libdir}/
@@ -150,21 +202,14 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %files
 %dir %{_sysconfdir}/iproute2
 %{_bindir}/bridge
-%{_bindir}/ctstat
 %{_bindir}/dcb
 %{_bindir}/dpll
 %{_bindir}/genl
 %{_bindir}/ifstat
 %{_bindir}/ip
-%{_bindir}/iproute-arpd
-%{_bindir}/lnstat
 %{_bindir}/netshaper
 %{_bindir}/nstat
 %{_bindir}/rdma
-%{_bindir}/routel
-%{_bindir}/rtacct
-%{_bindir}/rtmon
-%{_bindir}/rtstat
 %{_bindir}/ss
 %{_bindir}/devlink
 %{_bindir}/tipc
@@ -175,6 +220,40 @@ install -m644 %{SOURCE1} %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/cbq
 %doc %{_mandir}/man8/*
 %exclude %{_mandir}/man7/tc-*
 %exclude %{_mandir}/man8/tc*
+%exclude %{_mandir}/man8/arpd*
+%exclude %{_mandir}/man8/rtmon*
+%exclude %{_mandir}/man8/rtacct*
+%exclude %{_mandir}/man8/routel*
+%exclude %{_mandir}/man8/lnstat*
+%exclude %{_mandir}/man8/rtstat*
+%exclude %{_mandir}/man8/ctstat*
+
+%files arpd
+%{_bindir}/iproute-arpd
+%dir %{_localstatedir}/lib/arpd
+%ghost %{_localstatedir}/lib/arpd/arpd.db
+%ghost %{_localstatedir}/lib/arpd/arpd.db-lock
+%doc %{_mandir}/man8/arpd.8*
+
+%files rtmon
+%{_bindir}/rtmon
+%doc %{_mandir}/man8/rtmon.8*
+
+%files rtacct
+%{_bindir}/rtacct
+%doc %{_mandir}/man8/rtacct.8*
+
+%files routel
+%{_bindir}/routel
+%doc %{_mandir}/man8/routel.8*
+
+%files lnstat
+%{_bindir}/lnstat
+%{_bindir}/rtstat
+%{_bindir}/ctstat
+%doc %{_mandir}/man8/lnstat.8*
+%doc %{_mandir}/man8/rtstat.8*
+%doc %{_mandir}/man8/ctstat.8*
 
 %files tc
 %dir %{_sysconfdir}/sysconfig/cbq
